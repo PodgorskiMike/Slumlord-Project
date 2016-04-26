@@ -1,3 +1,4 @@
+package encapsulation;
 
 public class Robot {
 	private String name;
@@ -8,11 +9,11 @@ public class Robot {
 	
 	public Robot(String name, int positionX, int positionY, int speed, char orientation)
 	{
-		name = this.name;
-		positionX = this.positionX;
-		positionY = this.positionY;
-		speed = this.speed;
-		orientation = this.orientation;
+		this.name = name;
+		this.positionX = positionX;
+		this.positionY = positionY;
+		this.speed = speed;
+		this.orientation = orientation;
 		
 	}
 	public void move(boolean mover)
