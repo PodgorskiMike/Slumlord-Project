@@ -39,6 +39,19 @@ public class Robot {
 			return;
 		}
 	}
+	public int getpositionX()
+	{
+		return this.positionX;
+	}
+	public int getpositionY()
+	{
+		return this.positionY;
+	}
+	public int getorientation()
+	{
+		return this.orientation;
+	}
+	
 		public void rotate(boolean r)
 		{
 			if(this.orientation == 'N')
@@ -48,21 +61,21 @@ public class Robot {
 				if(r == false)
 					orientation = 'W';
 			}
-			if(this.orientation == 'E')
+			else if(this.orientation == 'E')
 			{
 				if(r == true)
 					orientation = 'S';
 				if(r == false)
 					orientation = 'N';
 			}
-			if(this.orientation == 'S')
+			else if(this.orientation == 'S')
 			{
 				if(r == true)
 					orientation = 'W';
 				if(r == false)
 					orientation = 'E';
 			}
-			if(this.orientation == 'W')
+			else if(this.orientation == 'W')
 			{
 				if(r == true)
 					orientation = 'N';
@@ -73,9 +86,10 @@ public class Robot {
 		
 		public int distance(Robot other)
 		{
-			int xdistance = this.positionX - other.positionX;
-			int ydistance = this.positionY - other.positionY;
+			int xdistance = other.positionX - this.positionX;
+			int ydistance = other.positionY - this.positionY;
 			int total = xdistance + ydistance;
+			System.out.println("The distance between the two Robots is " + total);
 			return total;
 		}
 		
@@ -88,8 +102,11 @@ public class Robot {
 		{
 			Robot myRobot = new Robot("Vikki", 0,0,5,'N');
 			System.out.println(myRobot);
-			Robot yourRobot = new Robot("Sam", 5, 5, 5, 'S');
-			System.out.println(yourRobot);
+			//Robot yourRobot = new Robot("Sam", 5, 5, 5, 'S');
+			//System.out.println(yourRobot);
+			myRobot.rotate(false);
+			System.out.println(myRobot);
+			
 		}
 }
 
