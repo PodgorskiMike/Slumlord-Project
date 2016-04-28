@@ -4,17 +4,15 @@ public class Accounts {
 
 	private float balance;
 	private int accountNum;
-	//private String type;
+	//private boolean status;
 	private String name;
-	private int route;
-	private final float min_balance = 50;
+	private final float  min_balance = 50;
 	 
 	public Accounts(float balance, int accountNum, String name)
 	{
 		this.balance = balance;
 		this.accountNum = accountNum;
 		this.name = name;
-		this.route = 402859275;
 	}
 	
 	public float getBalance()
@@ -33,13 +31,25 @@ public class Accounts {
 			return false;
 		}
 	}
+	//behaviors
+	public void deposit(float amount)
+	{	//check amount if its neg throw exception
+		if(amount > 0)
+		{
+			this.balance += amount;
+		}
+	}
 	
-	
-	//  behaviors
-	//deposit
-	//withdrawal
+	public boolean transfer(Accounts from, float amount)
+	{
+		if(from.withdraw(amount))
+		{
+			this.deposit(amount);
+			return true;
+		}
+		return false;
+	}
 	//overdraft
-	//transfer
 	//balance check
 	public static void main(String arg[])
 	{
@@ -47,6 +57,9 @@ public class Accounts {
 		System.out.println("Balance: " + myAccount.getBalance());
 		myAccount.withdraw(50);
 		System.out.println("Balance: " + myAccount.getBalance());
-		
+		Accounts zachAccount = new Accounts(500, 444, "Zach Lou");
+		myAccount.transfer(zachAccount, 100);
+		System.out.println("Balance: " + myAccount.getBalance());
+		System.out.println("Balance: " + zach Account.getBalance());
 	}
 }

@@ -126,14 +126,23 @@ public class RobotMenu {
 			System.out.println("That wasnt between 1 and 20! Try again:");
 			s = scan.nextInt();
 		}
-		System.out.println("What ditection is this Robot Facing? (N,E,S,W):");
-		char d = scan.next().charAt(0);
-		//if(d != 'N' || d != 'E' || d != 'S' || d != 'W')
-		//{
-		//	System.out.println("N,E,S or W only, Try Again:");
-		//	d = scan.next().charAt(0);
-		//}
-		robots.add(new Robot(name, x,y,s,d));
+		System.out.println("What ditection is this Robot Facing? (N=1,E=2,S=3,W=4):");
+		int d = scan.nextInt();
+		if(d < 0 || d > 4)
+		{
+			System.out.println("N,E,S or W only, Try Again:");
+			d = scan.next().charAt(0);
+		}
+		char z = 'Q';
+		if(d == 1)
+			z = 'N';
+		else if(d == 2)
+			z = 'E';
+		else if(d == 3)
+			z = 'S';
+		else if(d == 4)
+			z = 'W';
+		robots.add(new Robot(name, x,y,s,z));
 	}
 	
 	
