@@ -22,6 +22,42 @@ public class BaseballPlayer {
 		this.runsToday = runsToday;
 		this.rbiToday = rbiToday;
 	}
+	
+	public int getgames()
+	{
+		return this.games;
+	}
+	public int gethits()
+	{
+		return this.hits;
+	}
+	public int getruns()
+	{
+		return this.runs;
+	}
+	public int getrbi()
+	{
+		return this.rbi;
+	}
+	public int gethitsToday()
+	{
+		return this.hitsToday;
+	}
+	public int getrunsToday()
+	{
+		return this.runsToday;
+	}
+	public int getrbiToday()
+	{
+		return this.rbiToday;
+	}
+	
+	public String toString()
+	{
+		return "Jersey #: " + this.jersey + " Stance: " + this.stance + " Games Played: " + this.games + " Total Hits: " + this.hits + " Total Runs: " + this.runs + " Total Rbi's: " + this.rbi
+				+ " Hits Today: " + this.hitsToday + " Runs Today: " + this.runsToday + " Rbi's Today: " + this.rbiToday;	
+	}
+	
 	public void todayStats(int H, int R, int Rb)
 	{
 		this.hitsToday = H;
@@ -44,5 +80,6 @@ public class BaseballPlayer {
 		player1.todayStats(3,2,3);
 		
 	}
+	
 	
 }

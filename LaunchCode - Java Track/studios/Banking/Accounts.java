@@ -60,6 +60,6 @@ public class Accounts {
 		Accounts zachAccount = new Accounts(500, 444, "Zach Lou");
 		myAccount.transfer(zachAccount, 100);
 		System.out.println("Balance: " + myAccount.getBalance());
-		System.out.println("Balance: " + zach Account.getBalance());
+		System.out.println("Balance: " + zachAccount.getBalance());
 	}
 }

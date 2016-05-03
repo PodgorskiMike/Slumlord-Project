@@ -24,9 +24,9 @@ public class Fraction {
 	
 	public static void main(String args[])
 	{
-		Fraction myFraction = new Fraction(32.45, 32.00, 00.45);
+		Fraction myFraction = new Fraction(7.77, 7.00, 00.77);
 		System.out.println(myFraction);
-		System.out.println(myFraction.add(1.05));
+		System.out.println(myFraction.add(2.33));
 		
 	}
 }
