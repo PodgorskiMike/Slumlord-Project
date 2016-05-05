@@ -1,11 +1,12 @@
 package encapsulation;
 
 public class Robot {
-	private String name;
-	private int positionX;
-	private int positionY;
-	private int speed;
-	private char orientation;
+	protected String name;
+	protected int positionX;
+	protected int positionY;
+	protected int speed;
+	protected char orientation;
+	protected int health;
 	
 	public Robot(String name, int positionX, int positionY, int speed, char orientation)
 	{
@@ -14,6 +15,7 @@ public class Robot {
 		this.positionY = positionY;
 		this.speed = speed;
 		this.orientation = orientation;
+		this.health = 10;
 		
 	}
 	public void move(boolean mover)
@@ -95,7 +97,7 @@ public class Robot {
 		
 		public String toString()
 		{
-			return "Name: " + this.name + " Position X: " + this.positionX + " Position Y: " + this.positionY + " Orientation: " + this.orientation + " Speed: " + this.speed;
+			return "Name: " + this.name + " Position X: " + this.positionX + " Position Y: " + this.positionY + " Orientation: " + this.orientation + " Speed: " + this.speed+ " Health: "+ this.health;
 		}
 
 		public static void main(String args[])
