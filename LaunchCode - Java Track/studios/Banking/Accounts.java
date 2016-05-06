@@ -2,28 +2,30 @@ package Banking;
 
 public class Accounts {
 
-	private float balance;
+	protected double balance;
 	private int accountNum;
 	//private boolean status;
 	private String name;
-	private final float  min_balance = 50;
+	private double  minBalance = 50.00;
 	 
-	public Accounts(float balance, int accountNum, String name)
+	public Accounts(double balance, int accountNum, String name, double minBalance)
 	{
 		this.balance = balance;
 		this.accountNum = accountNum;
 		this.name = name;
+		this.minBalance = minBalance;
 	}
 	
-	public float getBalance()
+	public double getBalance()
 	{
 		return this.balance;
 	}
-	public boolean withdraw(float amount)
+	public boolean withdraw(double amount)
 	{
-		if(this.balance - min_balance >= amount)
+		if(this.balance - minBalance >= amount)
 		{
 			this.balance = this.balance - amount;
+			
 			return true;
 		}
 		else
@@ -32,7 +34,7 @@ public class Accounts {
 		}
 	}
 	//behaviors
-	public void deposit(float amount)
+	public void deposit(double amount)
 	{	//check amount if its neg throw exception
 		if(amount > 0)
 		{
@@ -40,7 +42,7 @@ public class Accounts {
 		}
 	}
 	
-	public boolean transfer(Accounts from, float amount)
+	public boolean transfer(Accounts from, double amount)
 	{
 		if(from.withdraw(amount))
 		{
@@ -53,11 +55,11 @@ public class Accounts {
 	//balance check
 	public static void main(String arg[])
 	{
-		Accounts myAccount = new Accounts(500, 314, "Mike Pod");
+		Accounts myAccount = new Accounts(500, 314, "Mike Pod", 50);
 		System.out.println("Balance: " + myAccount.getBalance());
 		myAccount.withdraw(50);
 		System.out.println("Balance: " + myAccount.getBalance());
-		Accounts zachAccount = new Accounts(500, 444, "Zach Lou");
+		Accounts zachAccount = new Accounts(500, 444, "Zach Lou", 50);
 		myAccount.transfer(zachAccount, 100);
 		System.out.println("Balance: " + myAccount.getBalance());
 		System.out.println("Balance: " + zachAccount.getBalance());

@@ -18,11 +18,19 @@ public class Bank {
 		this.location = location;
 	}
 	
-	public void createAccount(float balance, String owner)
+	public void createAccount(float balance, String owner, boolean isChecking)
 	{
 		int accountNum = accounts.size();
-		Accounts newAccount = new Accounts(balance, accountNum, owner);
-		accounts.add(newAccount);
+		Accounts a;
+		if(isChecking)
+		{
+			a = new CheckingAccount(balance, accountNum, name, true);
+		}
+		else
+		{
+			a = new SavingsAccount(balance, accountNum, name, 0.25);
+		}
+		accounts.add(a);
 	}
 	
 	public void deposit(float amount, int accountNum)
