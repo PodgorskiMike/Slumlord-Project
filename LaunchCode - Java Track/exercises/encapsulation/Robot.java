@@ -15,7 +15,7 @@ public class Robot {
 		this.positionY = positionY;
 		this.speed = speed;
 		this.orientation = orientation;
-		this.health = 10;
+		this.health = 20;
 		
 	}
 	public void move(boolean mover)
@@ -91,7 +91,7 @@ public class Robot {
 			int xdistance = other.positionX - this.positionX;
 			int ydistance = other.positionY - this.positionY;
 			int total = xdistance + ydistance;
-			System.out.println("The distance between the two Robots is " + total);
+			//System.out.println("The distance between the two Robots is " + total);
 			return total;
 		}
 		

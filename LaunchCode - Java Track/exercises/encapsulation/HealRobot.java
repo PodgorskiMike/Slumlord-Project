@@ -1,6 +1,8 @@
 package encapsulation;
 
-public class HealRobot extends Robot{
+import java.util.Random;
+
+public class HealRobot extends Robot implements RobotBehavior{
 	
 	private int range;
 	private int healAmount;
@@ -8,8 +10,8 @@ public class HealRobot extends Robot{
 	public HealRobot(String name, int positionX, int positionY, int speed, char orientation)
 	{
 		super(name, positionX, positionY, speed, orientation);
-		this.range = 15;
-		this.healAmount = 7;	
+		this.range = 20;
+		this.healAmount = 20;	
 	}
 	
 	public boolean heal(Robot a)
@@ -27,15 +29,41 @@ public class HealRobot extends Robot{
 		return "Name: " + this.name + " Position X: " + this.positionX + " Position Y: " + this.positionY + " Orientation: " + this.orientation + " Speed: " + this.speed
 				+ " Healing Amount: " + this.healAmount + " Healing Range: "+ this.range + " Health: "+ this.health;
 	}
-	public static void main(String args[])
-	{
-		AttackRobot Killer = new AttackRobot("Killer", 0, 0, 10, 'N', "Blaster");
-		Robot Vic = new Robot("Vic", 4,5,10,'E');
-		HealRobot Nurse = new HealRobot("Nurse", 10, 10 ,20, 'S');
-		System.out.println(Vic);
-		Killer.attack(Vic);
-		System.out.println(Vic);
-		Nurse.heal(Vic);
-		System.out.println(Vic);
+	
+	@Override
+	public boolean doNextMove(Robot a, Robot b) {
+		int q = Math.abs(this.distance(a));
+		int w = Math.abs(this.distance(b));
+		if(q > w)
+		{
+			if(this.range >= Math.abs(this.distance(b)))
+			{
+				System.out.println (Math.abs(this.distance(b)));
+				this.heal(b);
+				System.out.println(this.name + " Healed " + b.name + " for " + this.healAmount);
+				return true;
+			}
+		}
+		if(w > q)
+		{
+			if(this.range >= Math.abs(this.distance(a)))
+			{
+				System.out.println (Math.abs(this.distance(a)));
+				this.heal(a);
+				System.out.println(this.name + " Healed " + a.name + " for " + this.healAmount);
+				return true;
+			}
+		}
+		
+		else
+		{
+			Random num = new Random();
+			boolean RorL = num.nextBoolean();
+			this.rotate(RorL);
+			this.move(true);
+			System.out.println(this.name + " Rotated and Moved");
+			return true;
+		}
+	return false;
 	}
 }
