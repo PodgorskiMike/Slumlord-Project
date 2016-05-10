@@ -20,11 +20,11 @@ public class Bank {
 	
 	public void createAccount(float balance, String owner, boolean isChecking)
 	{
-		int accountNum = accounts.size();
+		int accountNum = accounts.size() ;
 		Accounts a;
 		if(isChecking)
 		{
-			a = new CheckingAccount(balance, accountNum, name, true);
+			a = new CheckingAccount(balance, accountNum, name, true) ;
 		}
 		else
 		{
