@@ -6,7 +6,7 @@ public class SavingsAccount extends Accounts{
 	private final int MAXWITHDRAW = 6;
 	private int withdrawals;
 	
-	public SavingsAccount(double balance, int accountNum, String name, double interest)
+	public SavingsAccount(double balance,  int accountNum, String name, double interest)
 	{
 		super(balance, accountNum, name, 500);
 		this.interest = interest;
