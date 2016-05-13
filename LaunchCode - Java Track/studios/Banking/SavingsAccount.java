@@ -2,22 +2,20 @@ package Banking;
 
 public class SavingsAccount extends Accounts{
 
-	private double interest;
 	private final int MAXWITHDRAW = 6;
 	private int withdrawals;
+	private Compoundable interestStrategy;
 	
-	public SavingsAccount(double balance,  int accountNum, String name, double interest)
+	public SavingsAccount(double balance,  int accountNum, String name, double interest, Compoundable strategy)
 	{
 		super(balance, accountNum, name, 500);
-		this.interest = interest;
 		this.withdrawals = 0;
+		this.interestStrategy = strategy;
 	}  
 	
 	public void compoundInterest(int periods)
 	{
-		double rOverN = 1 + this.interest / periods;
-		rOverN = Math.pow(rOverN,  periods);
-		this.balance = this.getBalance() * rOverN;
+		this.balance = this.interestStrategy.compoundInterest(this.balance);
 		
 	}
 	public boolean withdraw(double amount)

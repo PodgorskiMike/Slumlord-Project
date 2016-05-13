@@ -6,8 +6,11 @@ public class Character {
 	private String Description;
 	private String Skill;
 	private int RentRed;
+	private int RedOwned;
 	private int RentBlue;
+	private int BlueOwned;
 	private int RentGreen;
+	private int GreenOwned;
 	private int DepRed;
 	private int DepBlue;
 	private int DepGreen;
@@ -47,5 +50,77 @@ public class Character {
 		this.Bank = 500;
 	}
 	
-
+	public void buy(Property a)
+	{
+		if (a.Color == 1 && this.Bank > this.BuyRed)
+		{
+			this.Bank = this.Bank - this.BuyRed;
+			a.Color = a.Color - this.BuyRed;
+			a.Owned = true;
+			a.OwnedBy = this.Color;
+			this.RedOwned = this.RedOwned + 1;
+			//place colored building on map
+		}
+		if (a.Color == 2 && this.Bank > this.BuyBlue)
+		{
+			this.Bank = this.Bank - this.BuyBlue;
+			a.Color = a.Color - this.BuyBlue;
+			a.Owned = true;
+			a.OwnedBy = this.Color;
+			this.BlueOwned = this.BlueOwned + 1;
+			//place colored building on map
+		}
+		if (a.Color == 3 && this.Bank > this.BuyGreen)
+		{
+			this.Bank = this.Bank - this.BuyGreen;
+			a.Color = a.Color - this.BuyGreen;
+			a.Owned = true;
+			a.OwnedBy = this.Color;
+			this.GreenOwned = this.GreenOwned + 1;
+			//place colored building on map
+		}
+	}
+	
+	public void upgrade(Property a)
+	{
+		if(a.Color == 3)
+		{
+			System.out.println("Cannot Upgrate a Green Property");
+			return;
+		}
+		if (this.Bank > 500 && a.OwnedBy.equals(this.Color))
+		{
+			this.Bank = this.Bank - 500;
+			a.Upgrades = a.Upgrades + 1;
+			//add upgrade marker
+			if (a.Upgrades == 3)
+			{
+				if (a.Color == 1)
+					a.Color = 2;
+				if (a.Color == 2)
+					a.Color = 3;
+			}
+		}
+		else
+		{
+			System.out.println("Not Enough Money to Upgrade");
+			return;
+		}
+	}
+		
+		public void repair(Property a)
+		{
+			if( a.Damage > 0)
+			{
+				System.out.println("No Damage to Repair");
+				return;
+			}
+			if(this.Bank > 200)
+			{
+				this.Bank = this.Bank - 200;
+				a.Damage = a.Damage - 1;
+			}
+		}
+		
+	
 }
