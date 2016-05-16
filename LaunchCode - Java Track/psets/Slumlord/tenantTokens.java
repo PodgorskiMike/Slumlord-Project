@@ -2,28 +2,28 @@ package Slumlord;
 
 import java.util.Random;
 
-public class TenantTokens {
+public class tenantTokens {
 	
 	protected int RedTenant;
 	protected int BlueTenant;
 	protected int GreenTenant;
 
-	public TenantTokens()
+	public tenantTokens()
 	{
 		this.RedTenant = 35;
 		this.BlueTenant = 28;
 		this.GreenTenant = 20;
 	}
 	
-	public TenantTokens RandomDraw(TenantTokens a, int round)
+	public tenantTokens RandomDraw(tenantTokens a, int round)
 	{
 		int i = 0;
 		if(round == 1)
-			i = 8;
+			i = 6;
 		if(round == 2)
-			i = 8;
+			i = 6;
 		if(round == 3)
-			i = 8;
+			i = 6;
 		if(round == 4)
 			i = 8;
 		if(round == 5)
@@ -31,7 +31,7 @@ public class TenantTokens {
 		if(round == 6)
 			i = 8;
 		
-		TenantTokens avaliable = new TenantTokens();
+		tenantTokens avaliable = new tenantTokens();
 		avaliable.RedTenant = 0;
 		avaliable.BlueTenant = 0;
 		avaliable.GreenTenant = 0;

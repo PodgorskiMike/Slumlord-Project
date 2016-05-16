@@ -1,6 +1,6 @@
 package Slumlord;
 
-public class Character {
+public class character {
 	//Traits
 	private String Name;
 	private String Description;
@@ -29,7 +29,7 @@ public class Character {
 	//behaviors
 	
 	//constructor
-	public Character(String Name, String Description, String Skill,int LeaseNumRed, int LeaseNumBlue, int LeaseNumGreen, String Color )
+	public character(String Name, String Description, String Skill,int LeaseNumRed, int LeaseNumBlue, int LeaseNumGreen, String Color )
 	{
 		this.Name = Name;
 		this.Description = Description;
@@ -50,7 +50,7 @@ public class Character {
 		this.Bank = 500;
 	}
 	
-	public void buy(Property a)
+	public void buy(property a)
 	{
 		if (a.Color == 1 && this.Bank > this.BuyRed)
 		{
@@ -81,7 +81,7 @@ public class Character {
 		}
 	}
 	
-	public void upgrade(Property a)
+	public void upgrade(property a)
 	{
 		if(a.Color == 3)
 		{
@@ -108,7 +108,7 @@ public class Character {
 		}
 	}
 		
-		public void repair(Property a)
+		public void repair(property a)
 		{
 			if( a.Damage > 0)
 			{
@@ -120,6 +120,17 @@ public class Character {
 				this.Bank = this.Bank - 200;
 				a.Damage = a.Damage - 1;
 			}
+		}
+		
+		public String toString()
+		{
+			return this.Name + this.Skill;
+		}
+		
+		public static void main(String args[])
+		{
+			
+					
 		}
 		
 	

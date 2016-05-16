@@ -1,6 +1,6 @@
 package Slumlord;
 
-public class Property {
+public class property {
 	
 	private String Hood;
 	protected int Color;
@@ -11,7 +11,7 @@ public class Property {
 	protected int Damage;
 	
 	
-	public Property(String Hood, int Color)
+	public property(String Hood, int Color)
 	{
 		this.Hood = Hood;
 		this.Color = Color;
