@@ -1,5 +1,7 @@
 package encapsulation;
 
+import java.awt.SystemColor;
+
 public class Robot {
 	protected String name;
 	protected int positionX;
@@ -109,6 +111,10 @@ public class Robot {
 			myRobot.rotate(false);
 			System.out.println(myRobot);
 			
+			.setContentAreaFilled(false);
+			.setBorderPainted(false);
+			.setBorder(null);
+			.setForeground(SystemColor.inactiveCaption);
 		}
 }
 

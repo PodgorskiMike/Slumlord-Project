@@ -2,9 +2,9 @@ package Slumlord;
 
 public class property {
 	
-	private String Hood;
+	protected String Hood;
 	protected int Color;
-	private boolean Occupied;
+	protected boolean Occupied;
 	protected boolean Owned;
 	protected String OwnedBy;
 	protected int Upgrades;
@@ -22,4 +22,12 @@ public class property {
 		this.Damage = 0;
 	}
 
+	public String toString()
+	{
+		return "" + this.Damage + "";
+	}
+	
+	public static void main(String args[])
+	{
+	}
 }
