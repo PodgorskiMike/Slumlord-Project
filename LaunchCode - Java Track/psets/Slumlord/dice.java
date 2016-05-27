@@ -9,17 +9,20 @@ public class dice {
 	protected int Blue;
 	
 	
-	public dice()
+	public dice(int red, int blue, int green)
 	{
-		this.Green = 0;
-		this.Red = 0;
-		this.Blue = 0;
+		this.Green = green;
+		this.Red = red;
+		this.Blue = blue;
 		
 	}
 		
 		public dice Roll(int Numdice)
 		{
-			dice Results = new dice();
+			dice Results = new dice(0,0,0);
+			this.Red = 0;
+			this.Blue = 0;
+			this.Green = 0;
 			//dice Results2 = new dice()
 			
 			Random generator = new Random();
@@ -39,20 +42,7 @@ public class dice {
 				if(j == 6)
 					this.Green = this.Green + 2;
 			}
-			//Not sure how reroll will be implemeted
-			/**if(this.Blue < Numdice)
-			{
-				int k = Numdice - this.Blue;
-				System.out.println("You can reroll up to " + k + " dice");
-				System.out.println("Would you like to reroll?");
-				//Get input
-				System.out.println("How Many");
-				//Get input Q
-				Results2 = this.Roll(int Q);
-				
-			}
-		Results.Blue = Results.Blue + Results2.Blue;
-		**/
+			
 			Results = this;
 		return Results;
 		}

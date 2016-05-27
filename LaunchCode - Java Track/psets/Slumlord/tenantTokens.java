@@ -30,12 +30,24 @@ public class tenantTokens {
 			i = 8;
 		if(round == 6)
 			i = 8;
+		if(round == 7)
+			i = 10;
+		if(round == 8)
+			i = 10;
+		if(round == 9)
+			i = 8;
+		if(round == 10)
+			i = 6;
+		if(round == 11)
+			i = 4;
+		if(round == 12)
+			i = 3;
 		
 		tenantTokens avaliable = new tenantTokens();
 		avaliable.RedTenant = 0;
 		avaliable.BlueTenant = 0;
 		avaliable.GreenTenant = 0;
-		while (i >= 0)
+		while (i > 0)
 		{
 			Random generator = new Random();
 			int j = generator.nextInt(3)+1;

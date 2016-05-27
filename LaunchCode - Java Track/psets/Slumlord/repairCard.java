@@ -22,7 +22,7 @@ public class repairCard {
 		
 	}
 	
-	public repairCard Draw()
+	/**public repairCard Draw()
 	{
 		if(all.size() == 0)
 		{
@@ -37,7 +37,7 @@ public class repairCard {
 		
 		return Drawn;
 	}
-
+*/
 	public static void main(String args[])
 	{
 		repairCard a = new repairCard("Test", 1, 0,"");
