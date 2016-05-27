@@ -106,7 +106,7 @@ public class playSlumlord {
 		frmSlumlord.setUndecorated(true);
 	
 		
-		//welcome label
+		//welcome lavbel
 		JLabel lblWelcomeToSlumlord = new JLabel("Galactic Slumlord");
 		lblWelcomeToSlumlord.setForeground(new Color(0, 0, 255));
 		lblWelcomeToSlumlord.setFont(new Font("Copperplate Gothic Light", Font.PLAIN, 85));
