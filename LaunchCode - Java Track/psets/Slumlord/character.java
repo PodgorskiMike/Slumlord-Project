@@ -1389,6 +1389,7 @@ public class character {
 				{
 					Turn.setText("<html>Cannot take more Damage! Apply to another Property or you can click Take From Bank");
 					btnTakeBank.setVisible(true);
+					btnDrawCard.setVisible(false);
 					
 				}
 				if(currentRoll.Red > 0 || currentRoll.Blue > 0)
@@ -1536,6 +1537,7 @@ public class character {
 			if(r1.Color == 3)
 			{
 				Turn.setText("Cannot Upgrate a Green Property");
+				return;
 			}
 			if(((character) playerChars.get(playersTurn)).SkillNum == 4)
 			{
@@ -1694,7 +1696,7 @@ public class character {
 		}
 		//method for repairing
 		public void Repairing(property r1, JButton btnRedpropone, ArrayList playerChars, int playersTurn, int phase, JLabel Turn, JLabel characterCard ){
-			if(r1.OwnedBy.equals(((character)playerChars.get(playersTurn)).PlayerColor) && phase == 4)
+			if(r1.OwnedBy.equals(((character)playerChars.get(playersTurn)).PlayerColor) && phase == 4 && r1.Damage < 3  && r1.Damage > 0)
 			{
 				//String resp = ((character) playerChars.get(playersTurn)).repair(r1);
 				if( r1.Damage == 0)

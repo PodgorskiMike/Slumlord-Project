@@ -881,7 +881,7 @@ public class playSlumlord {
 		
 		
 		//Button for damaging other properties
-		JButton btnDamageOthers = new JButton("Damage");
+		JButton btnDamageOthers = new JButton("Deal Damage");
 		btnDamageOthers.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				btnDamageOthers.setVisible(false);
@@ -3808,6 +3808,8 @@ public class playSlumlord {
 				three.setVisible(false);
 				four.setVisible(false);
 				btnSelectCharacter.setVisible(true);
+				Turn.setVisible(true);
+				Turn.setText("<html>Click a Character in the List then Click Select Character</html>");
 			}
 		});
 		//actions for player selection button
@@ -3819,6 +3821,8 @@ public class playSlumlord {
 				three.setVisible(false);
 				four.setVisible(false);
 				btnSelectCharacter.setVisible(true);
+				Turn.setVisible(true);
+				Turn.setText("<html>Click a Character in the List then Click Select Character</html>");
 			}
 		});
 		
@@ -3896,6 +3900,33 @@ public class playSlumlord {
 						//System.out.println(playerChars.get(0));
 						Turn.setText("<html>" + playerChars.get(playersTurn).Name + "'s Turn Pick Your First Property (Must be a Red Property)</html>");
 						phase = 3;
+						String a = "Ivory";
+						String b = "Yellow";
+						String c = "LimeGreen";
+						String d = "DarkBlue";
+						
+					
+								
+							if(players == 2)
+							{
+								playerChars.get(0).PlayerColor = a;
+								playerChars.get(1).PlayerColor = b;
+							}
+							if(players == 3)
+							{
+								playerChars.get(0).PlayerColor = a;
+								playerChars.get(1).PlayerColor = b;
+								playerChars.get(2).PlayerColor = c;
+							}
+								
+							if(players == 4)
+							{
+								playerChars.get(0).PlayerColor = a;
+								playerChars.get(1).PlayerColor = b;
+								playerChars.get(2).PlayerColor = c;
+								playerChars.get(3).PlayerColor = d;
+							}
+								
 					}
 					
 			}
@@ -3923,6 +3954,7 @@ public class playSlumlord {
 				Turn.setText("<html>"+ playerChars.get(playersTurn).Name + "'s Turn Pick a Tenant from the Avaliable Tenants </html>");
 				btnStartRoundOne.setVisible(false);
 				phase = 1;
+								
 			}
 		});
 		btnNextPhase.addActionListener(new ActionListener() {
