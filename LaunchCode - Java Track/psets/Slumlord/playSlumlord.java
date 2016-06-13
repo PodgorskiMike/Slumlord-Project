@@ -25,46 +25,53 @@ import java.awt.Dimension;
 import javax.swing.border.LineBorder;
 import java.awt.SystemColor;
 import javax.swing.border.BevelBorder;
-import java.awt.Window.Type;
 
 public class playSlumlord {
-	//for character selection
+	
 	private JFrame frmSlumlord;
+	//for character selection display
 	private static DefaultListModel<character> listModel;
 	private JList<character> list;
-	//Buttons for player number selection
-	JButton two = new JButton();
-	JButton three = new JButton();
-	JButton four = new JButton();
-	//variable to keep track of how many players
-	private int players;
 	//Arraylist of selected characters playing in game
 	public ArrayList<character> playerChars = new ArrayList<character>();
+		
+	//variable to keep track of how many players
+	private int players;
+	
 	//variable for which players turn it is
 	int playersTurn = 0;
+	
 	//variable for what round it is
 	int round = 1;
+	
 	//variable for tenant selected to move in
 	int currentTenant;
-	//variable for dice to be rolled
-	//int numDice = 0;
-	//variable to hold avaliable tenant tokens
+	
+	//variable to hold available tenant tokens for each round
 	tenantTokens avaliable = new tenantTokens();
-	//variable for tenant tokens
+	
+	//variable for tenant tokens pool for the whole game
 	tenantTokens game = new tenantTokens();
-	//variable for rerolls
+	
 	// variable for current dice results
 	dice currentRoll = new dice(0,0,0);
-	//arraylist to hold repair cards
+	
+	//Arraylists to hold repair cards and event cards New and Used
 	protected ArrayList<repairCard> all = new ArrayList<repairCard>();
 	protected ArrayList<repairCard> used = new ArrayList<repairCard>();
 	protected ArrayList<eCard> allE = new ArrayList<eCard>();
 	protected ArrayList<eCard> usedE = new ArrayList<eCard>();
-	//variable to manage repairs
-	//int DamageVar = -1;
+	
 	//variable for phase control
 	int phase = 1;
+	
+	//variable for controlling financial loss event cards
 	int amountLost = 0;
+	
+	//Create Game Dice
+	dice gameDice = new dice(0,0,0);
+	
+	int totalRounds = 0;
 	
 	/**
 	 * Launch the application.
@@ -104,39 +111,98 @@ public class playSlumlord {
 		frmSlumlord.getContentPane().setLayout(null);
 		frmSlumlord.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frmSlumlord.setUndecorated(true);
-	
 		
-		//welcome lavbel
+		//Additional JLables to Display all Game Info
+		//welcome label
 		JLabel lblWelcomeToSlumlord = new JLabel("Galactic Slumlord");
-		lblWelcomeToSlumlord.setForeground(new Color(0, 0, 255));
+		lblWelcomeToSlumlord.setForeground(Color.WHITE);
 		lblWelcomeToSlumlord.setFont(new Font("Copperplate Gothic Light", Font.PLAIN, 85));
 		lblWelcomeToSlumlord.setHorizontalAlignment(SwingConstants.CENTER);
 		lblWelcomeToSlumlord.setBounds(451, 82, 1100, 100);
 		frmSlumlord.getContentPane().add(lblWelcomeToSlumlord);
 		
+		// Frame to hold Rules
 		JFrame frame = new JFrame();
 		
-		//Button to display basic rules
-		JButton btnRules = new JButton("Rules");
-		btnRules.setDefaultCapable(false);
-		btnRules.setContentAreaFilled(false);
-		btnRules.setBorderPainted(false);
-		btnRules.setBackground(new Color(0, 0, 0));
-		btnRules.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 34));
-		btnRules.setForeground(new Color(0, 0, 255));
-		btnRules.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-		frame.setTitle("Rules of Play");
-		btnRules.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				JOptionPane.showMessageDialog(frame.getComponent(0), "Rules Go Here");
-			}
-		});
-		btnRules.setBounds(1645, 192, 185, 43);
-		frmSlumlord.getContentPane().add(btnRules);
+		//Label for Displaying Winner
+		JLabel Winner = new JLabel("");
+		Winner.setHorizontalAlignment(SwingConstants.CENTER);
+		Winner.setForeground(Color.WHITE);
+		Winner.setOpaque(true);
+		Winner.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		Winner.setBackground(Color.BLACK);
+		Winner.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 46));
+		Winner.setVisible(false);
+		Winner.setBounds(589, 224, 752, 69);
+		frmSlumlord.getContentPane().add(Winner);
 		
-		//initalizing dice
-		dice gameDice = new dice(0,0,0);
+		//Label to Display Card Drawn
+		JLabel CardDisplay = new JLabel("");
+		CardDisplay.setVerticalAlignment(SwingConstants.TOP);
+		CardDisplay.setHorizontalTextPosition(SwingConstants.CENTER);
+		CardDisplay.setHorizontalAlignment(SwingConstants.CENTER);
+		CardDisplay.setOpaque(true);
+		CardDisplay.setBorder(new LineBorder(Color.WHITE, 2, true));
+		CardDisplay.setBackground(Color.BLACK);
+		CardDisplay.setForeground(Color.WHITE);
+		CardDisplay.setFont(new Font("Copperplate Gothic Light", Font.PLAIN, 18));
+		CardDisplay.setVisible(false);
+		CardDisplay.setBounds(677, 859, 157, 199);
+		frmSlumlord.getContentPane().add(CardDisplay);
 		
+		//Label for character card display
+		JLabel characterCard = new JLabel("");
+		characterCard.setBorder(new LineBorder(Color.WHITE, 1, true));
+		characterCard.setVisible(false);
+		characterCard.setOpaque(true);
+		characterCard.setBackground(SystemColor.desktop);
+		characterCard.setForeground(Color.WHITE);
+		characterCard.setFont(new Font("Copperplate Gothic Light", Font.PLAIN, 14));
+		characterCard.setBounds(16, 848, 548, 210);
+		frmSlumlord.getContentPane().add(characterCard);
+		
+		//Label for dice results
+		JLabel diceResults = new JLabel("");
+		diceResults.setForeground(Color.WHITE);
+		diceResults.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 24));
+		diceResults.setVisible(false);
+		diceResults.setFocusable(false);
+		diceResults.setBounds(909, 413, 147, 201);
+		frmSlumlord.getContentPane().add(diceResults);
+		
+		//Frame to display available tenants each round 
+		JLabel avaliableTenants = new JLabel("<html>Tenants Avaliable<br>Red:<br>Blue:<br>Green:</html>");
+		avaliableTenants.setToolTipText("<html>The tenants are randomly drawn each round from a set pool.  <br>If you see a lot of Green or Blue tenants early in the game, <br>expect a shortage in the later rounds.</html>");
+		avaliableTenants.setForeground(Color.WHITE);
+		avaliableTenants.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 24));
+		avaliableTenants.setBounds(1611, 90, 165, 172);
+		avaliableTenants.setVisible(false);
+		frmSlumlord.getContentPane().add(avaliableTenants);
+		
+		//Frame for main text info box
+		JLabel Turn = new JLabel("");
+		Turn.setForeground(new Color(255, 255, 255));
+		Turn.setVisible(false);
+		Turn.setHorizontalAlignment(SwingConstants.CENTER);
+		Turn.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 23));
+		Turn.setBounds(34, 0, 402, 235);
+		frmSlumlord.getContentPane().add(Turn);
+		
+		//List to display Characters for Selection
+		listModel = new DefaultListModel<character>();
+		list = new JList<character>(listModel);
+		list.setBorder(null);
+		list.setForeground(new Color(255, 255, 255));
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		list.setFont(new Font("Copperplate Gothic Light", Font.PLAIN, 20));
+		list.setVisible(false);
+		list.setOpaque(false);
+		list.setBackground(Color.BLACK);
+		list.setBounds(549, 308, 883, 278);
+		frmSlumlord.getContentPane().add(list);
+		
+		
+		// Creation of all Game Assets (Cards, Characters, Properties)
 		//create repair cards
 		repairCard aa = new repairCard("Evaporator Broken", 1, 0, "Any Property");
 		repairCard bb = new repairCard("Door Blown In", 1, 1,"Any Red Property");
@@ -174,7 +240,7 @@ public class playSlumlord {
 		repairCard hhh = new repairCard("Server Droid on Strike", 1, 3,"Any Green Property");
 		
 		
-		
+		// Add all repair cards to Array so they can be drawn at random
 		all.add(aa);
 		all.add(bb);
 		all.add(cc);
@@ -210,7 +276,7 @@ public class playSlumlord {
 		all.add(ggg);
 		all.add(hhh);
 		
-		//create event Cards
+		//create all event Cards
 		eCard eaa = new eCard("Sex Offender", 0, true, 0, 1, "Lose One Tenant From a Red Building");
 		eCard ebb = new eCard("Lunar Lotto", 0, false, 500, 0, "You Won $500 Bucks!");
 		eCard ecc = new eCard("Anonymous Tip", 0, false, -1000, 0, "Player of Your Choice is Being Audited by the Glactic IRS. They Lose $1000");
@@ -244,50 +310,39 @@ public class playSlumlord {
 		eCard eggg = new eCard("Satelite Crash", 0, false, 2001, 0, " One Damage to ANY Property");
 		
 		
-		 allE.add(eaa);
-		 allE.add(ebb);
-		 allE.add(ecc);
-		 allE.add(edd);
-		 allE.add(eee);
-		 allE.add(eff);
-		 allE.add(egg);
-		 allE.add(ehh);
-		 allE.add(eii);
-		 allE.add(ejj);
-		 allE.add(ekk);
-		 allE.add(ell);
-		 allE.add(emm);
-		 allE.add(enn);
-		 allE.add(eoo);
-		 allE.add(epp);
-		 allE.add(eqq);
-		 allE.add(err);
-		 allE.add(ess);
-		 allE.add(ett);
-		 allE.add(euu);
-		 allE.add(evv);
-		 allE.add(eww);
-		 allE.add(exx);
-		 allE.add(eyy);
-		 allE.add(eaaa);
-		 allE.add(ebbb);
-		 allE.add(eccc);
-		 allE.add(eeee);
-		 allE.add(efff);
-		 allE.add(eggg);
+		// Add all Event cards to Array so they can be drawn at random
+		allE.add(eaa);
+		allE.add(ebb);
+		allE.add(ecc);
+		allE.add(edd);
+		allE.add(eee);
+		allE.add(eff);
+		allE.add(egg);
+		allE.add(ehh);
+		allE.add(eii);
+		allE.add(ejj);
+		allE.add(ekk);
+		allE.add(ell);
+		allE.add(emm);
+		allE.add(enn);
+		allE.add(eoo);
+		allE.add(epp);
+		allE.add(eqq);
+		allE.add(err);
+		allE.add(ess);
+		allE.add(ett);
+		allE.add(euu);
+		allE.add(evv);
+		allE.add(eww);
+		allE.add(exx);
+		allE.add(eyy);
+		allE.add(eaaa);
+		allE.add(ebbb);
+		allE.add(eccc);
+		allE.add(eeee);
+		allE.add(efff);
+		allE.add(eggg);
 		
-		//making character list
-		listModel = new DefaultListModel<character>();
-		list = new JList<character>(listModel);
-		list.setBorder(null);
-		list.setForeground(new Color(255, 255, 255));
-		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		list.setFont(new Font("Copperplate Gothic Light", Font.PLAIN, 20));
-		list.setVisible(false);
-		list.setOpaque(false);
-		list.setBackground(Color.BLACK);
-		list.setBounds(549, 308, 883, 278);
-		frmSlumlord.getContentPane().add(list);
 		
 		//create all characters
 		character Scotty = new character("Scotty", "desc", "Skill: Preventative Maintaince. Discard One Repair Card Each Round",2,4,6,"Purple", 1);
@@ -305,9 +360,8 @@ public class playSlumlord {
 		Burke.BuyGreen = 1800;
 		Martin.Bank = Martin.Bank + 200;
 		
-		//character a = new character("Please Select a Character", "","",2,4,6,"");
+		
 		//populating character list
-		//listModel.add(0,a);
 		listModel.add(0,Scotty);
 		listModel.add(1,Burke);
 		listModel.add(2,Han);
@@ -319,39 +373,157 @@ public class playSlumlord {
 		listModel.add(8,Ripley);
 		listModel.add(9,Jordi);
 		
+		//Make properties
+		property r1 = new property(1,1,0);
+		property r2 = new property(1,1,0);
+		property r3 = new property(1,1,0);
+		property r4 = new property(1,1,0);
+		property r5 = new property(1,1,0);
+		property r6 = new property(2,1,0);
+		property r7 = new property(2,1,0);
+		property r8 = new property(2,1,0);
+		property r9 = new property(2,1,0);
+		property r10 = new property(2,1,0);
+		property r11 = new property(3,1,0);
+		property r12 = new property(3,1,0);
+		property r13 = new property(3,1,0);
+		property r14 = new property(3,1,0);
+		property r15 = new property(3,1,0);
+		property r16 = new property(4,1,0);
+		property r17 = new property(5,1,0);
+		property r18 = new property(6,1,0);
+		property b1 = new property(7,2,3);
+		property b2 = new property(7,2,3);
+		property b3 = new property(7,2,3);
+		property b4 = new property(7,2,3);
+		property b5 = new property(8,2,3);
+		property b6 = new property(8,2,3);
+		property b7 = new property(8,2,3);
+		property b8 = new property(8,2,3);
+		property b9 = new property(9,2,3);
+		property b10 = new property(9,2,3);
+		property b11 = new property(9,2,3);
+		property b12 = new property(9,2,3);
+		property b13 = new property(10,2,3);
+		property g1 = new property(11, 3,6);
+		property g2 = new property(11, 3,6);
+		property g3 = new property(11, 3,6);
+		property g4 = new property(12, 3,6);
+		property g5 = new property(12, 3,6);
+		property g6 = new property(12, 3,6);
+		property g7 = new property(13, 3,6);
+		property g8 = new property(13, 3,6);
+		property g9 = new property(13, 3,6);
+		
+		
+		//Create All Buttons
+		//Button to display basic rules
+		JButton btnRules = new JButton("Rules");
+		btnRules.setDefaultCapable(false);
+		btnRules.setContentAreaFilled(false);
+		btnRules.setBorderPainted(false);
+		btnRules.setBackground(new Color(0, 0, 0));
+		btnRules.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 34));
+		btnRules.setForeground(Color.WHITE);
+		btnRules.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		frame.setTitle("Rules of Play");
+		btnRules.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				JOptionPane.showMessageDialog(frame.getComponent(0), "<html><p>First Click 'Start Game' select the number of players and the number of rounds to be played.<br></p> "
+						+ "<p>Round 0:<br> Each player selects a character from the character list and clicks the 'Select Character' button. When all the players have selected a character<br>"
+						+ " the game board will appear and prompt the players to select their first property. Do so by clicking on the square tiles marked with '*'. Once a player selects a <br>property "
+						+ "the marker (*) will change to that players color. Click on 'Next Player'.  When all the players have chosen their first property click 'Start Round One' <br>"
+						+ "to begin the game. </p>"
+						+ "<p>Gameplay: <br>Each round consists of 2 phases. The Leasing Phase and the Management Phase. The goal of the game is to have the most money after the final round.<br>"
+						+ "This final score is the combination of the money in your bank and value of the properties you own minus any repairs needed.</p>"
+						+ "<p>Leasing Phase:<br> The player chooses a tenant(Red, Blue or Green) to try and 'move in' then 'Rolls' the virtual dice to attempt the move in. The tenants are drawn <br>"
+						+ "randomly from a set pool of tenants determined by the number of players playing. The tenants not used each round are discarded and new tenants are drawn at the start <br>"
+						+ "of each round. <br>"
+						+ "Each character has different stats that determine the roll needed to succeed. This is shown on the 'Character Card' in the bottom left corner of the screen.  It is easiest to<br>"
+						+ " move a tenant into the same color building (ie. Red Tenant into Red Building). The number in the corresponding place on the Character Card is the number of 'Green' rolls <br>"
+						+ "the player needs to succeed.  Each virtual die has 6 sides. 2 Red Sides, 1 Blue Side, 2 Green Side and 1 Double Green Side.  Giving the player a 50% chance of rolling <br>"
+						+ "at least one Green with each die and a 16.6% chance of rolling 2 Green.  Players must roll at least 3 dice and gain the option to roll up to 8 dice with each building <br>"
+						+ "owned over 3.</p>"
+						+ "Selecting Tenant and Rolling:<br>"
+						+ "To select a tenant and roll to attempt to move them in, simply click on the color in the upper right corner then select the number of dice you would like to roll and <br>"
+						+ "click on the property you want to move them into. The results of your roll will be displayed in the center of the screen.  If you rolled enough greens you succeeded and <br>"
+						+ "will automatically collect a deposit.  If you fail, you can choose to reroll any dice that came up red by clicking on the property again.  But beware, for every Red and <br>"
+						+ "Blue that is rolled you will have to draw a card. Red cards are Damage Cards and Blue are Event Cards.  After you have rolled (successfully or not) you will have to draw <br>"
+						+ "cards before you can move to the next phase.  To draw cards click 'Draw Card' and follow the instructions on the card.  When you have finished Drawing cards (or if there <br>"
+						+ "none to draw click 'Next Phase'  You will then receive your rent from all occupied building and move to the next phase"
+						+ ".</p>"
+						+ "<p>Management Phase:<br>"
+						+ "In this phase you can Buy, Repair, or Upgrade your properties.  Simply click on the option you want then click on the property. You can buy properties for $800, $1200, and <br>"
+						+ "$2000.  You can also hover the mouse over the property for basic information.  Properties can only have 3 damage at any time. It costs $200 to repair each damage marker. <br>"
+						+ "If a property is occupied and gets 3 damage marks the tenant will move out. You can only upgrade Red and Blue properties. If you upgrade a property 3 times it will become <br>"
+						+ "the next level. Red becomes Blue and Blue becomes Green. If a property is occupied when it is upgraded, the tenant will pay the upgraded rent amount.</html>");
+			}
+		});
+		btnRules.setBounds(1645, 284, 185, 43);
+		frmSlumlord.getContentPane().add(btnRules);
+		
 		//Buttons for player number selection
 		JButton two = new JButton("2 Players");
 		two.setContentAreaFilled(false);
 		two.setBorderPainted(false);
 		two.setBorder(null);
-		two.setForeground(new Color(0, 0, 255));
+		two.setForeground(Color.WHITE);
 		two.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 34));
 		two.setOpaque(false);
 		two.setVisible(false);
 		two.setBounds(10, 304, 295, 23);
 		frmSlumlord.getContentPane().add(two);
 		
+		//Buttons for player number selection
 		JButton three = new JButton("3 Players");
 		three.setContentAreaFilled(false);
 		three.setBorderPainted(false);
 		three.setBorder(null);
-		three.setForeground(new Color(0, 0, 255));
+		three.setForeground(Color.WHITE);
 		three.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 34));
 		three.setOpaque(false);
 		three.setVisible(false);
 		three.setBounds(10, 352, 295, 23);
 		frmSlumlord.getContentPane().add(three);
 		
+		//Buttons for player number selection
 		JButton four = new JButton("4 Players");
 		four.setContentAreaFilled(false);
 		four.setBorderPainted(false);
 		four.setBorder(null);
-		four.setForeground(new Color(0, 0, 255));
+		four.setForeground(Color.WHITE);
 		four.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 34));
 		four.setVisible(false);
 		four.setOpaque(false);
 		four.setBounds(10, 397, 295, 23);
 		frmSlumlord.getContentPane().add(four);
+		
+		JButton btnTotalRounds6 = new JButton("6 Rounds");
+		btnTotalRounds6.setVisible(false);
+		btnTotalRounds6.setForeground(Color.WHITE);
+		btnTotalRounds6.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 34));
+		btnTotalRounds6.setContentAreaFilled(false);
+		btnTotalRounds6.setBorderPainted(false);
+		btnTotalRounds6.setBounds(10, 304, 277, 23);
+		frmSlumlord.getContentPane().add(btnTotalRounds6);
+	
+		JButton btnTotalRounds12 = new JButton("12 Rounds");
+		btnTotalRounds12.setVisible(false);
+		btnTotalRounds12.setForeground(Color.WHITE);
+		btnTotalRounds12.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 34));
+		btnTotalRounds12.setContentAreaFilled(false);
+		btnTotalRounds12.setBorderPainted(false);
+		btnTotalRounds12.setBounds(16, 352, 277, 23);
+		frmSlumlord.getContentPane().add(btnTotalRounds12);
+		
+		JButton btnTotalRounds24 = new JButton("24 Rounds");
+		btnTotalRounds24.setVisible(false);
+		btnTotalRounds24.setForeground(Color.WHITE);
+		btnTotalRounds24.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 34));
+		btnTotalRounds24.setContentAreaFilled(false);
+		btnTotalRounds24.setBorderPainted(false);
+		btnTotalRounds24.setBounds(28, 397, 277, 23);
+		frmSlumlord.getContentPane().add(btnTotalRounds24);
 		
 		//start game button
 		JButton btnStartGame = new JButton("Start Game");
@@ -361,19 +533,20 @@ public class playSlumlord {
 		btnStartGame.setBackground(new Color(0, 0, 0));
 		btnStartGame.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 34));
 		btnStartGame.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-		btnStartGame.setForeground(new Color(0, 0, 255));
+		btnStartGame.setForeground(Color.WHITE);
 		btnStartGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//Make Player selection visible
 				btnStartGame.setVisible(false);
 				two.setVisible(true);
 				three.setVisible(true);
 				four.setVisible(true);
 			}
 		});
-		btnStartGame.setBounds(10, 192, 295, 43);
+		btnStartGame.setBounds(16, 294, 295, 43);
 		frmSlumlord.getContentPane().add(btnStartGame);
 		
-		//select character initial
+		//select character button
 		JButton btnSelectCharacter = new JButton("Select Character");
 		btnSelectCharacter.setContentAreaFilled(false);
 		btnSelectCharacter.setBorderPainted(false);
@@ -383,44 +556,6 @@ public class playSlumlord {
 		btnSelectCharacter.setVisible(false);
 		btnSelectCharacter.setBounds(537, 591, 336, 23);
 		frmSlumlord.getContentPane().add(btnSelectCharacter);
-		
-		//main text box initial
-		JLabel Turn = new JLabel("");
-		Turn.setForeground(new Color(255, 255, 255));
-		Turn.setVisible(false);
-		Turn.setHorizontalAlignment(SwingConstants.CENTER);
-		Turn.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 23));
-		Turn.setBounds(34, 0, 402, 235);
-		frmSlumlord.getContentPane().add(Turn);
-		
-		//make text box to display avaliable tenants each round 
-		JLabel avaliableTenants = new JLabel("<html>Tenants Avaliable<br>Red:<br>Blue:<br>Green:</html>");
-		avaliableTenants.setToolTipText("The tenants are randomly drawn each round from a set pool.  If you see a lot of Green or Blue tenants early in the game, expect a shortage in the later rounds.  ");
-		avaliableTenants.setForeground(Color.WHITE);
-		avaliableTenants.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 24));
-		avaliableTenants.setBounds(1611, 90, 165, 172);
-		avaliableTenants.setVisible(false);
-		frmSlumlord.getContentPane().add(avaliableTenants);
-		
-		//dice results initial
-		JLabel diceResults = new JLabel("");
-		diceResults.setForeground(Color.WHITE);
-		diceResults.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 24));
-		diceResults.setVisible(false);
-		diceResults.setFocusable(false);
-		diceResults.setBounds(909, 413, 147, 201);
-		frmSlumlord.getContentPane().add(diceResults);
-		
-		//make text box for character card display
-		JLabel characterCard = new JLabel("");
-		characterCard.setBorder(new LineBorder(Color.WHITE, 1, true));
-		characterCard.setVisible(false);
-		characterCard.setOpaque(true);
-		characterCard.setBackground(SystemColor.desktop);
-		characterCard.setForeground(Color.WHITE);
-		characterCard.setFont(new Font("Copperplate Gothic Light", Font.PLAIN, 14));
-		characterCard.setBounds(16, 848, 548, 210);
-		frmSlumlord.getContentPane().add(characterCard);
 		
 		//make repair from bank button
 		JButton btnTakeBank = new JButton("Take Repairs From Bank");
@@ -440,70 +575,19 @@ public class playSlumlord {
 		btnDrawCard.setBorder(null);
 		btnDrawCard.setForeground(Color.WHITE);
 		
-		//Make Card Display panel
-		JLabel CardDisplay = new JLabel("");
-		CardDisplay.setVerticalAlignment(SwingConstants.TOP);
-		CardDisplay.setHorizontalTextPosition(SwingConstants.CENTER);
-		CardDisplay.setHorizontalAlignment(SwingConstants.CENTER);
-		CardDisplay.setOpaque(true);
-		CardDisplay.setBorder(new LineBorder(Color.WHITE, 2, true));
-		CardDisplay.setBackground(Color.BLACK);
-		CardDisplay.setForeground(Color.WHITE);
-		CardDisplay.setFont(new Font("Copperplate Gothic Light", Font.PLAIN, 18));
-		CardDisplay.setVisible(false);
-		CardDisplay.setBounds(677, 859, 157, 199);
-		frmSlumlord.getContentPane().add(CardDisplay);
-		
-		//initalize next phase button
-				JButton btnNextPhase = new JButton("Next Phase");
-				btnNextPhase.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 24));
-				btnNextPhase.setContentAreaFilled(false);
-				btnNextPhase.setBorderPainted(false);
-				btnNextPhase.setBorder(null);
-				btnNextPhase.setForeground(Color.WHITE);
-				btnNextPhase.setVisible(false);
-				btnNextPhase.setBounds(385, 814, 190, 23);
-				frmSlumlord.getContentPane().add(btnNextPhase);
+		//Create next phase button
+		JButton btnNextPhase = new JButton("Next Phase");
+		btnNextPhase.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 24));
+		btnNextPhase.setContentAreaFilled(false);
+		btnNextPhase.setBorderPainted(false);
+		btnNextPhase.setBorder(null);
+		btnNextPhase.setForeground(Color.WHITE);
+		btnNextPhase.setVisible(false);
+		btnNextPhase.setBounds(385, 814, 190, 23);
+		frmSlumlord.getContentPane().add(btnNextPhase);
 		
 		//Fill all occupied reds
 		JButton btnFillReds = new JButton("Fill All Reds");
-		btnFillReds.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				btnFillReds.setVisible(false);
-				btnNextPhase.setVisible(true);
-				for(int i = 0; i < playerChars.get(playersTurn).AllOwned.size(); i++)
-				{
-					if(playerChars.get(playersTurn).AllOwned.get(i).Color == 1)
-					{
-						if(playerChars.get(playersTurn).AllOwned.get(i).Occupied == false  && playerChars.get(playersTurn).AllOwned.get(i).Damage != 3)
-						{
-							playerChars.get(playersTurn).RedOccupied = playerChars.get(playersTurn).RedOccupied + 1;
-							playerChars.get(playersTurn).AllOwned.get(i).Occupied = true;
-							JButton G = playerChars.get(playersTurn).AllOwned.get(i).ButtonName;
-							if(playerChars.get(playersTurn).AllOwned.get(i).Damage == 0)
-							{
-								G.setHorizontalTextPosition(SwingConstants.CENTER);
-								G.setVerticalAlignment(SwingConstants.CENTER);
-								G.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 42));
-								G.setText("O");
-							}
-							if(playerChars.get(playersTurn).AllOwned.get(i).Damage == 1)
-							{
-								G.setHorizontalTextPosition(SwingConstants.CENTER);
-								G.setFont(new Font("Copperplate Gothic Bold", Font.BOLD, 22));
-								G.setText("<html>O<br>X</html>");
-							}
-							if(playerChars.get(playersTurn).AllOwned.get(i).Damage == 2)
-							{
-								G.setHorizontalTextPosition(SwingConstants.CENTER);
-								G.setFont(new Font("Copperplate Gothic Bold", Font.BOLD, 22));
-								G.setText("<html>&nbsp;O<br>XX</html>");
-							}
-						}
-					}
-				}
-			}
-		});
 		btnFillReds.setVisible(false);
 		btnFillReds.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 24));
 		btnFillReds.setForeground(Color.WHITE);
@@ -548,318 +632,121 @@ public class playSlumlord {
 		btnChooseP4.setBounds(824, 956, 165, 23);
 		frmSlumlord.getContentPane().add(btnChooseP4);
 		
+		//Event Card Specific Action Responses
+		btnFillReds.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				btnFillReds.setVisible(false);
+				//iterate over current players array of owned properties
+				for(int i = 0; i < playerChars.get(playersTurn).AllOwned.size(); i++)
+				{
+					//if property is a Red property 
+					if(playerChars.get(playersTurn).AllOwned.get(i).Color == 1)
+					{
+						//and red property is Unoccupied, and Does not have 3 damage points
+						if(playerChars.get(playersTurn).AllOwned.get(i).Occupied == false  && playerChars.get(playersTurn).AllOwned.get(i).Damage != 3)
+						{
+							//Add one to players variable for Red occupied properties
+							playerChars.get(playersTurn).RedOccupied = playerChars.get(playersTurn).RedOccupied + 1;
+							//Change Occupied to True
+							playerChars.get(playersTurn).AllOwned.get(i).Occupied = true;
+							JButton G = playerChars.get(playersTurn).AllOwned.get(i).ButtonName;
+							//Set Button Text to Display proper Damage and Occupied Status
+							if(playerChars.get(playersTurn).AllOwned.get(i).Damage == 0)
+							{
+								G.setHorizontalTextPosition(SwingConstants.CENTER);
+								G.setVerticalAlignment(SwingConstants.CENTER);
+								G.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 42));
+								G.setText("O");
+							}
+							if(playerChars.get(playersTurn).AllOwned.get(i).Damage == 1)
+							{
+								G.setHorizontalTextPosition(SwingConstants.CENTER);
+								G.setFont(new Font("Copperplate Gothic Bold", Font.BOLD, 22));
+								G.setText("<html>O<br>X</html>");
+							}
+							if(playerChars.get(playersTurn).AllOwned.get(i).Damage == 2)
+							{
+								G.setHorizontalTextPosition(SwingConstants.CENTER);
+								G.setFont(new Font("Copperplate Gothic Bold", Font.BOLD, 22));
+								G.setText("<html>&nbsp;O<br>XX</html>");
+							}
+						}
+					}
+				}
+				if(currentRoll.Blue > 0)
+				{
+					btnDrawCard.setVisible(true);
+				}
+				if(currentRoll.Blue == 0)
+				{
+					btnNextPhase.setVisible(true);
+				}
+				
+			}
+		});
+		
+		//Buttons for player negative financial events that require a player selection
 		btnChooseP1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				btnChooseP1.setVisible(false);
 				btnChooseP2.setVisible(false);
 				btnChooseP3.setVisible(false);
 				btnChooseP4.setVisible(false);
-				if(amountLost == 1)
-				{
-					for(int i = 0; i < players; i++)
-					{
-						int n = playerChars.get(i).PlayerNumber;
-						if( n == 0)
-						{
-							playerChars.get(i).Bank = playerChars.get(i).Bank - 1000;
-						}
-					}
-					currentRoll.Blue = currentRoll.Blue - 1;
-					diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
-					if(currentRoll.Blue > 0)
-					{
-						btnDrawCard.setVisible(true);
-					}
-					else
-					{
-						btnNextPhase.setVisible(true);
-						Turn.setText("<html>Click on Next Phase to Continue.<html>");
-					}
-				}
-				if(amountLost == 2)
-				{
-					for(int i = 0; i < players; i++)
-					{
-						int n = playerChars.get(i).PlayerNumber;
-						if( n == 0)
-						{
-							playerChars.get(i).Bank = playerChars.get(i).Bank - 500;
-						}
-					}
-					currentRoll.Blue = currentRoll.Blue - 1;
-					diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
-					if(currentRoll.Blue > 0)
-					{
-						btnDrawCard.setVisible(true);
-					}
-					else
-					{
-						btnNextPhase.setVisible(true);
-						Turn.setText("<html>Click on Next Phase to Continue.<html>");
-					}
-				}
-				if(amountLost == 3)
-				{
-					for(int i = 0; i < players; i++)
-					{
-						int n = playerChars.get(i).PlayerNumber;
-						if( n == 0)
-						{
-							playerChars.get(i).Bank = playerChars.get(i).Bank - 200;
-						}
-					}
-					currentRoll.Blue = currentRoll.Blue - 1;
-					diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
-					if(currentRoll.Blue > 0)
-					{
-						btnDrawCard.setVisible(true);
-					}
-					else
-					{
-						btnNextPhase.setVisible(true);
-						Turn.setText("<html>Click on Next Phase to Continue.<html>");
-					}
-				}
-			}
+				eCard Holder = new eCard("", 0, false, 0, 0, "");
+				Holder.TakeMoney(amountLost, 0, players, playerChars, currentRoll, diceResults, btnDrawCard, btnNextPhase, Turn);
+			}});
 				
-		});
+		//Buttons for player negative financial events that require a player selection		
 		btnChooseP2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				btnChooseP1.setVisible(false);
 				btnChooseP2.setVisible(false);
 				btnChooseP3.setVisible(false);
 				btnChooseP4.setVisible(false);
-				if(amountLost == 1)
-				{
-					for(int i = 0; i < players; i++)
-					{
-						int n = playerChars.get(i).PlayerNumber;
-						if( n == 1)
-						{
-							playerChars.get(i).Bank = playerChars.get(i).Bank - 1000;
-						}
-					}
-					currentRoll.Blue = currentRoll.Blue - 1;
-					diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
-					if(currentRoll.Blue > 0)
-					{
-						btnDrawCard.setVisible(true);
-					}
-					else
-					{
-						btnNextPhase.setVisible(true);
-						Turn.setText("<html>Click on Next Phase to Continue.<html>");
-					}
-				}
-				if(amountLost == 2)
-				{
-					for(int i = 0; i < players; i++)
-					{
-						int n = playerChars.get(i).PlayerNumber;
-						if( n == 1)
-						{
-							playerChars.get(i).Bank = playerChars.get(i).Bank - 500;
-						}
-					}
-					currentRoll.Blue = currentRoll.Blue - 1;
-					diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
-					if(currentRoll.Blue > 0)
-					{
-						btnDrawCard.setVisible(true);
-					}
-					else
-					{
-						btnNextPhase.setVisible(true);
-						Turn.setText("<html>Click on Next Phase to Continue.<html>");
-					}
-				}
-				if(amountLost == 3)
-				{
-					for(int i = 0; i < players; i++)
-					{
-						int n = playerChars.get(i).PlayerNumber;
-						if( n == 1)
-						{
-							playerChars.get(i).Bank = playerChars.get(i).Bank - 200;
-						}
-					}
-					currentRoll.Blue = currentRoll.Blue - 1;
-					diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
-					if(currentRoll.Blue > 0)
-					{
-						btnDrawCard.setVisible(true);
-					}
-					else
-					{
-						btnNextPhase.setVisible(true);
-						Turn.setText("<html>Click on Next Phase to Continue.<html>");
-					}
-				}
-			}
+				eCard Holder = new eCard("", 0, false, 0, 0, "");
+				Holder.TakeMoney(amountLost, 1, players, playerChars, currentRoll, diceResults, btnDrawCard, btnNextPhase, Turn);
+			}});
 				
-		});
+		//Buttons for player negative financial events that require a player selection		
 		btnChooseP3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				btnChooseP1.setVisible(false);
 				btnChooseP2.setVisible(false);
 				btnChooseP3.setVisible(false);
 				btnChooseP4.setVisible(false);
-				if(amountLost == 1)
-				{
-					for(int i = 0; i < players; i++)
-					{
-						int n = playerChars.get(i).PlayerNumber;
-						if( n == 2)
-						{
-							playerChars.get(i).Bank = playerChars.get(i).Bank - 1000;
-						}
-					}
-					currentRoll.Blue = currentRoll.Blue - 1;
-					diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
-					if(currentRoll.Blue > 0)
-					{
-						btnDrawCard.setVisible(true);
-					}
-					else
-					{
-						btnNextPhase.setVisible(true);
-						Turn.setText("<html>Click on Next Phase to Continue.<html>");
-					}
-				}
-				if(amountLost == 2)
-				{
-					for(int i = 0; i < players; i++)
-					{
-						int n = playerChars.get(i).PlayerNumber;
-						if( n == 2)
-						{
-							playerChars.get(i).Bank = playerChars.get(i).Bank - 500;
-						}
-					}
-					currentRoll.Blue = currentRoll.Blue - 1;
-					diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
-					if(currentRoll.Blue > 0)
-					{
-						btnDrawCard.setVisible(true);
-					}
-					else
-					{
-						btnNextPhase.setVisible(true);
-						Turn.setText("<html>Click on Next Phase to Continue.<html>");
-					}
-				}
-				if(amountLost == 3)
-				{
-					for(int i = 0; i < players; i++)
-					{
-						int n = playerChars.get(i).PlayerNumber;
-						if( n == 2)
-						{
-							playerChars.get(i).Bank = playerChars.get(i).Bank - 200;
-						}
-					}
-					currentRoll.Blue = currentRoll.Blue - 1;
-					diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
-					if(currentRoll.Blue > 0)
-					{
-						btnDrawCard.setVisible(true);
-					}
-					else
-					{
-						btnNextPhase.setVisible(true);
-						Turn.setText("<html>Click on Next Phase to Continue.<html>");
-					}
-				}
-			}
+				eCard Holder = new eCard("", 0, false, 0, 0, "");
+				Holder.TakeMoney(amountLost, 2, players, playerChars, currentRoll, diceResults, btnDrawCard, btnNextPhase, Turn);
+			}});
 				
-		});
+		//Buttons for player negative financial events that require a player selection		
 		btnChooseP4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				btnChooseP1.setVisible(false);
 				btnChooseP2.setVisible(false);
 				btnChooseP3.setVisible(false);
 				btnChooseP4.setVisible(false);
-				if(amountLost == 1)
-				{
-					for(int i = 0; i < players; i++)
-					{
-						int n = playerChars.get(i).PlayerNumber;
-						if( n == 3)
-						{
-							playerChars.get(i).Bank = playerChars.get(i).Bank - 1000;
-						}
-					}
-					currentRoll.Blue = currentRoll.Blue - 1;
-					diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
-					if(currentRoll.Blue > 0)
-					{
-						btnDrawCard.setVisible(true);
-					}
-					else
-					{
-						btnNextPhase.setVisible(true);
-						Turn.setText("<html>Click on Next Phase to Continue.<html>");
-					}
-				}
-				if(amountLost == 2)
-				{
-					for(int i = 0; i < players; i++)
-					{
-						int n = playerChars.get(i).PlayerNumber;
-						if( n == 3)
-						{
-							playerChars.get(i).Bank = playerChars.get(i).Bank - 500;
-						}
-					}
-					currentRoll.Blue = currentRoll.Blue - 1;
-					diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
-					if(currentRoll.Blue > 0)
-					{
-						btnDrawCard.setVisible(true);
-					}
-					else
-					{
-						btnNextPhase.setVisible(true);
-						Turn.setText("<html>Click on Next Phase to Continue.<html>");
-					}
-				}
-				if(amountLost == 3)
-				{
-					for(int i = 0; i < players; i++)
-					{
-						int n = playerChars.get(i).PlayerNumber;
-						if( n == 3)
-						{
-							playerChars.get(i).Bank = playerChars.get(i).Bank - 200;
-						}
-					}
-					currentRoll.Blue = currentRoll.Blue - 1;
-					diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
-					if(currentRoll.Blue > 0)
-					{
-						btnDrawCard.setVisible(true);
-					}
-					else
-					{
-						btnNextPhase.setVisible(true);
-						Turn.setText("<html>Click on Next Phase to Continue.<html>");
-					}
-				}
-			}
+				eCard Holder = new eCard("", 0, false, 0, 0, "");
+				Holder.TakeMoney(amountLost, 3, players, playerChars, currentRoll, diceResults, btnDrawCard, btnNextPhase, Turn);
+			}});
 				
-		});
+		//Buttons for player positive financial events
 		JButton btnCollect = new JButton("Collect");
 		btnCollect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				btnCollect.setVisible(false);
+				//iterate over all players
 				for(int i = 0; i< players; i++)
 				{
+					//Subtract 500 from each player and add to current player(turn)
 					playerChars.get(playersTurn).Bank = playerChars.get(playersTurn).Bank + 500;
 					playerChars.get(i).Bank = playerChars.get(i).Bank - 500;
 				}
+				//Update Character Card
 				characterCard.setText(playerChars.get(playersTurn).charCard());
+				//remove 1 blue die/card and redisplay roll
 				currentRoll.Blue = currentRoll.Blue - 1;
 				diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
+				//if no more blue die/card move to next phase
 				if(currentRoll.Blue > 0)
 				{
 					btnDrawCard.setVisible(true);
@@ -880,15 +767,19 @@ public class playSlumlord {
 		frmSlumlord.getContentPane().add(btnCollect);
 		
 		
-		//Button for damaging other properties
+		//Button for event cards damaging other properties
 		JButton btnDamageOthers = new JButton("Deal Damage");
 		btnDamageOthers.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				btnDamageOthers.setVisible(false);
+				//update text
 				Turn.setText("<html>Click on Any Property to Add Damage</html>");
+				//phase 11 is damage others
 				phase = 11;
+				//remove one blue die/card and redisplay
 				currentRoll.Blue = currentRoll.Blue - 1;
 				diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
+				//if no more blue die/card move to next phase
 				if(currentRoll.Blue > 0)
 				{
 					btnDrawCard.setVisible(true);
@@ -905,17 +796,19 @@ public class playSlumlord {
 		btnDamageOthers.setForeground(Color.WHITE);
 		btnDamageOthers.setContentAreaFilled(false);
 		btnDamageOthers.setBorderPainted(false);
-		btnDamageOthers.setBounds(668, 825, 183, 23);
+		btnDamageOthers.setBounds(625, 825, 263, 23);
 		frmSlumlord.getContentPane().add(btnDamageOthers);
 		
 		
-		//initaliza discard button
+		//Create discard button for when card cant be used by player
 		JButton btnDiscard = new JButton("Discard");
 		btnDiscard.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//remove card text
 				CardDisplay.setText("");
 				btnDiscard.setVisible(false);
 				
+				//Remove one red or blue die/card if they any remain
 				if(currentRoll.Red > 0)
 				{
 					currentRoll.Red = currentRoll.Red - 1;
@@ -924,8 +817,10 @@ public class playSlumlord {
 				{
 					currentRoll.Blue= currentRoll.Blue - 1;
 				}
+				//redisplay new die result 
 				diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
 				Turn.setText("Discarded");
+				//if more draws remain, make button active again
 				if(currentRoll.Red > 0)
 				{					
 					btnDrawCard.setVisible(true);
@@ -936,6 +831,7 @@ public class playSlumlord {
 					btnDrawCard.setVisible(true);
 					playerChars.get(playersTurn).DamageVar = -1;
 				}
+				//When all draws are exhausted, make next phase active
 				if(currentRoll.Red == 0 && currentRoll.Blue == 0)
 				{
 					btnNextPhase.setVisible(true);
@@ -952,17 +848,21 @@ public class playSlumlord {
 		btnDiscard.setBounds(661, 801, 190, 23);
 		frmSlumlord.getContentPane().add(btnDiscard);
 		
-		
+		//Draw Card Button
 		btnDrawCard.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//Always Deals with Red Cards/ Dice first
+				//if red dice are present, change display color to red and phase to 2 (damage from repair cards) 
 				if(currentRoll.Red > 0)
 				{		
 					CardDisplay.setForeground(Color.RED);
 					phase = 2;
+					//if the deck of repair cards have all been used, take all cards from used pile and move back to all pile
 					if(all.size() == 0)
 					{
 						all = used;
 					}
+					//make discard visible for character (scotty) with corresponding skill 
 					if(playerChars.get(playersTurn).SkillNum == 1)
 					{
 						btnDiscard.setVisible(true);
@@ -971,15 +871,23 @@ public class playSlumlord {
 					}
 					btnDrawCard.setVisible(false);
 					CardDisplay.setVisible(true);
+					//create random generator and make variable to store random number no bigger than the size of the remaining deck to be drawn from
 					Random generator = new Random();
 					repairCard Drawn = new repairCard("",0,0,"");
 					int j = generator.nextInt(all.size());
+					//pull card from indexed array with random index
 					Drawn = all.get(j);
+					//remove index from all
 					all.remove(j);
+					//add to used 
 					used.add(Drawn);
+					//update card display
 					CardDisplay.setText("<html><center><h2>Damage</h2><h3>" + Drawn.Description + "<br>" + Drawn.Damage + "Damage" + "<br>" + Drawn.Which + "</h3></center></html>");
+					//Set damageVar. Red = 1, blue = 2 green = 3
 					playerChars.get(playersTurn).DamageVar = Drawn.WhichProperty;
+					//check to see if player has properties the damageVar can be used on
 					boolean canUse = false;
+					//damageVar 0 is universal
 					if(playerChars.get(playersTurn).DamageVar == 0)
 					{
 						canUse = true;
@@ -987,56 +895,77 @@ public class playSlumlord {
 					}
 					else
 					{
+						//iterate over all properties the player owns looking to a property that matches the damageVar
 						for(int p = 0; p < playerChars.get(playersTurn).AllOwned.size(); p++)
 						{
 							int q = playerChars.get(playersTurn).AllOwned.get(p).Color;
 							if(q == playerChars.get(playersTurn).DamageVar)
+								//if a match is found set canUse to true
 							{
 								canUse = true;
 							}
 						}
+						//if no match was wound update text and make discard button visible
 						if(canUse == false)
 						{
 							Turn.setText("<html>No Properties of that type Click Discard</html>");
 							btnDiscard.setVisible(true);
 						}
+						//if match was found prompt player to click on property to apply damage
 						if(canUse == true)
 						{
 							Turn.setText("<html> Click on the Property that you want to apply the Damage to.</html>");
 						}
 					}
 				}
+				//once all red cards/dice are dealt with move on to blue cards/dice
 				else if(currentRoll.Blue > 0)
 				{
+					//if all cards have been used, copy usedE into allE
 					if(allE.size() == 0)
 					{
 						allE = usedE;
 					}
+					//Change display color blue
 					CardDisplay.setForeground(Color.BLUE);
+					//set phase to o to insure no damage is added to property by accident
 					phase = 0;
 					btnDrawCard.setVisible(false);
 					CardDisplay.setVisible(true);
+					//create random generator and make variable to store random number no bigger than the size of the remaining deck to be drawn from
 					Random generator = new Random();
 					eCard Drawn = new eCard("",0, false, 0, 0,"");
 					int j = generator.nextInt(allE.size());
+					//use random number to pull random index from array
 					Drawn = allE.get(j);
+					//remove used card from array
 					allE.remove(j);
+					//add used card to used array
 					usedE.add(Drawn);
+					//update display
 					CardDisplay.setText("<html><center><h2>Event</h2><h3>" + Drawn.Description + "<br>" + Drawn.Which + "</h3></center></html>");
+					//set damage variable for color of property to be affected by card red = 1, blue = 2, green = 3
 					playerChars.get(playersTurn).DamageVar = Drawn.WhichProperty;
+					//variable to check if property is owned
 					boolean canUse = false;
+					//variable to check if property is occupied
 					boolean occupiedRightColor = false;
+					//damageVar 0 is universal, all characters will have a property this can be used on
 					if(playerChars.get(playersTurn).DamageVar == 0)
 					{
 						canUse = true;
 						
+						//Financial boon Event cards 
 						if(Drawn.Money == 500)
 						{
+							//add money to players bank, update text and player card to reflect
 							playerChars.get(playersTurn).Bank = playerChars.get(playersTurn).Bank + 500;
 							Turn.setText("<html>Free Money! You're Welcome!</html>");
 							characterCard.setText(playerChars.get(playersTurn).charCard());
+							//remove blue card/die from tally and redisplay
 							currentRoll.Blue = currentRoll.Blue - 1;
 							diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
+							//if cards remain, draw again, if not, next phase
 							if(currentRoll.Blue > 0)
 							{
 								btnDrawCard.setVisible(true);
@@ -1049,11 +978,14 @@ public class playSlumlord {
 						}
 						if(Drawn.Money == 400)
 						{
+							//add money to players bank, update text and player card to reflect
 							playerChars.get(playersTurn).Bank = playerChars.get(playersTurn).Bank + 400;
 							Turn.setText("<html>Free Money! You're Welcome!</html>");
 							characterCard.setText(playerChars.get(playersTurn).charCard());
+							//remove blue card/die from tally and redisplay
 							currentRoll.Blue = currentRoll.Blue - 1;
 							diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
+							//if cards remain, draw again, if not, next phase
 							if(currentRoll.Blue > 0)
 							{
 								btnDrawCard.setVisible(true);
@@ -1066,58 +998,14 @@ public class playSlumlord {
 						}
 						if(Drawn.Money == 200)
 						{
+							//add money to players bank, update text and player card to reflect
 							playerChars.get(playersTurn).Bank = playerChars.get(playersTurn).Bank + 200;
 							Turn.setText("<html>Free Money! You're Welcome!</html>");
 							characterCard.setText(playerChars.get(playersTurn).charCard());
+							//remove blue card/die from tally and redisplay
 							currentRoll.Blue = currentRoll.Blue - 1;
 							diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
-							if(currentRoll.Blue > 0)
-							{
-								btnDrawCard.setVisible(true);
-							}
-							else
-							{
-								btnNextPhase.setVisible(true);
-								Turn.setText("<html>Click on Next Phase to Continue.<html>");
-							}
-						}
-						if(Drawn.Money == 7)
-						{
-							playerChars.get(playersTurn).LeaseNumRed = playerChars.get(playersTurn).LeaseNumRed - 1;
-							currentRoll.Blue = currentRoll.Blue - 1;
-							diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
-							if(currentRoll.Blue > 0)
-							{
-								btnDrawCard.setVisible(true);
-							}
-							else
-							{
-								btnNextPhase.setVisible(true);
-								Turn.setText("<html>Click on Next Phase to Continue.<html>");
-							}
-						}
-						if(Drawn.Money == 77)
-						{
-							playerChars.get(playersTurn).LeaseNumBlue = playerChars.get(playersTurn).LeaseNumBlue - 1;
-							currentRoll.Blue = currentRoll.Blue - 1;
-							diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
-							if(currentRoll.Blue > 0)
-							{
-								btnDrawCard.setVisible(true);
-							}
-							else
-							{
-								btnNextPhase.setVisible(true);
-								Turn.setText("<html>Click on Next Phase to Continue.<html>");
-							}
-						}
-						if(Drawn.Money == 777)
-						{
-							playerChars.get(playersTurn).LeaseNumRed = playerChars.get(playersTurn).LeaseNumRed - 1;
-							playerChars.get(playersTurn).LeaseNumBlue = playerChars.get(playersTurn).LeaseNumBlue - 1;
-							playerChars.get(playersTurn).LeaseNumGreen = playerChars.get(playersTurn).LeaseNumGreen - 1;
-							currentRoll.Blue = currentRoll.Blue - 1;
-							diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
+							//if cards remain, draw again, if not, next phase
 							if(currentRoll.Blue > 0)
 							{
 								btnDrawCard.setVisible(true);
@@ -1133,6 +1021,7 @@ public class playSlumlord {
 							playerChars.get(playersTurn).Bank = playerChars.get(playersTurn).Bank + 1000;
 							Turn.setText("<html>Free Money! You're Welcome!</html>");
 							characterCard.setText(playerChars.get(playersTurn).charCard());
+							//remove blue card/die from tally and redisplay
 							currentRoll.Blue = currentRoll.Blue - 1;
 							diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
 							if(currentRoll.Blue > 0)
@@ -1145,9 +1034,69 @@ public class playSlumlord {
 								Turn.setText("<html>Click on Next Phase to Continue.<html>");
 							}
 						}
+						
+						
+						//drawn money 7,77,777 are not actually money but change the characters rolls needed to move tenants in
+						if(Drawn.Money == 7)
+						{
+							//change characters red leasing number by -1
+							playerChars.get(playersTurn).LeaseNumRed = playerChars.get(playersTurn).LeaseNumRed - 1;
+							//remove blue card/die from tally and redisplay
+							currentRoll.Blue = currentRoll.Blue - 1;
+							diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
+							//if cards remain, draw again, if not, next phase
+							if(currentRoll.Blue > 0)
+							{
+								btnDrawCard.setVisible(true);
+							}
+							else
+							{
+								btnNextPhase.setVisible(true);
+								Turn.setText("<html>Click on Next Phase to Continue.<html>");
+							}
+						}
+						if(Drawn.Money == 77)
+						{
+							//change characters blue leasing number by -1
+							playerChars.get(playersTurn).LeaseNumBlue = playerChars.get(playersTurn).LeaseNumBlue - 1;
+							//remove blue card/die from tally and redisplay
+							currentRoll.Blue = currentRoll.Blue - 1;
+							diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
+							if(currentRoll.Blue > 0)
+							{
+								btnDrawCard.setVisible(true);
+							}
+							else
+							{
+								btnNextPhase.setVisible(true);
+								Turn.setText("<html>Click on Next Phase to Continue.<html>");
+							}
+						}
+						if(Drawn.Money == 777)
+						{
+							//change characters red, blue, and green leasing number by -1
+							playerChars.get(playersTurn).LeaseNumRed = playerChars.get(playersTurn).LeaseNumRed - 1;
+							playerChars.get(playersTurn).LeaseNumBlue = playerChars.get(playersTurn).LeaseNumBlue - 1;
+							playerChars.get(playersTurn).LeaseNumGreen = playerChars.get(playersTurn).LeaseNumGreen - 1;
+							//remove blue card/die from tally and redisplay
+							currentRoll.Blue = currentRoll.Blue - 1;
+							diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
+							if(currentRoll.Blue > 0)
+							{
+								btnDrawCard.setVisible(true);
+							}
+							else
+							{
+								btnNextPhase.setVisible(true);
+								Turn.setText("<html>Click on Next Phase to Continue.<html>");
+							}
+						}
+						//actions for removal of money from another character event cards
+						//set amount lost and drawn money for use in TakeMoney method
 						if(Drawn.Money == -1000)
 						{
 							amountLost = 1;
+							//display correct amount of buttons for number of players
 							if(players == 2)
 							{
 								btnChooseP1.setVisible(true);
@@ -1167,9 +1116,11 @@ public class playSlumlord {
 								btnChooseP4.setVisible(true);
 							}
 						}
+						//set amount lost and drawn money for use in TakeMoney method
 						if(Drawn.Money == -500)
 						{
 							amountLost = 2;
+							//display correct amount of buttons for number of players
 							if(players == 2)
 							{
 								btnChooseP1.setVisible(true);
@@ -1189,9 +1140,11 @@ public class playSlumlord {
 								btnChooseP4.setVisible(true);
 							}
 						}
+						//set amount lost and drawn money for use in TakeMoney method
 						if(Drawn.Money == -200)
 						{
 							amountLost = 3;
+							//display correct amount of buttons for number of players
 							if(players == 2)
 							{
 								btnChooseP1.setVisible(true);
@@ -1211,27 +1164,34 @@ public class playSlumlord {
 								btnChooseP4.setVisible(true);
 							}
 						}
+						
+						//DrawnMoney 501 = collect 500 from all players
 						if (Drawn.Money == 501)
 						{
 							btnCollect.setVisible(true);
 						}
+						//DrawnMoney 1111 = fill all unoccupied reds
 						if(Drawn.Money == 1111)
 						{
 							btnFillReds.setVisible(true);
 						}
+						//DrawnMoney 2001 = Damage an opponents property
 						if(Drawn.Money == 2001)
 						{
 							btnDamageOthers.setVisible(true);
 						}
 					}
+					//Handles losing tenants from one of your properties
 					else
-					{
+					{	//loop to check players properties and see if they have a tenant to loose of the proper color
 						for(int p = 0; p < playerChars.get(playersTurn).AllOwned.size(); p++)
-						{
+						{	//look to see if property is the right color
 							int q = playerChars.get(playersTurn).AllOwned.get(p).Color;
 							if(q == playerChars.get(playersTurn).DamageVar)
 							{
+								//check if that property is occupied
 								boolean occupied = playerChars.get(playersTurn).AllOwned.get(p).Occupied;
+								//if yes, set booleans
 								if( occupied == true)
 								{
 									occupiedRightColor = true;
@@ -1239,19 +1199,20 @@ public class playSlumlord {
 								canUse = true;
 							}
 						}
+						//if no fitting property can be found, make discard avaliable
 						if(canUse == false || occupiedRightColor == false)
 						{
 							Turn.setText("<html>No Properties of that type Click Discard</html>");
 							btnDiscard.setVisible(true);
 						}
+						//if propery property is owned and occupied
 						if(occupiedRightColor == true)
 						{
+							//set phase to 6(remove tenant) and update display
 							phase = 6;
 							Turn.setText("<html>Click on the Property to Remove Tenant.</html>");	
 						}
 					}
-					
-					
 				}
 			}
 		});
@@ -1259,50 +1220,9 @@ public class playSlumlord {
 		btnDrawCard.setBounds(661, 825, 190, 23);
 		frmSlumlord.getContentPane().add(btnDrawCard);
 				
-		//Make properties
-				property r1 = new property(1,1,0);
-				property r2 = new property(1,1,0);
-				property r3 = new property(1,1,0);
-				property r4 = new property(1,1,0);
-				property r5 = new property(1,1,0);
-				property r6 = new property(2,1,0);
-				property r7 = new property(2,1,0);
-				property r8 = new property(2,1,0);
-				property r9 = new property(2,1,0);
-				property r10 = new property(2,1,0);
-				property r11 = new property(3,1,0);
-				property r12 = new property(3,1,0);
-				property r13 = new property(3,1,0);
-				property r14 = new property(3,1,0);
-				property r15 = new property(3,1,0);
-				property r16 = new property(4,1,0);
-				property r17 = new property(5,1,0);
-				property r18 = new property(6,1,0);
-				property b1 = new property(7,2,3);
-				property b2 = new property(7,2,3);
-				property b3 = new property(7,2,3);
-				property b4 = new property(7,2,3);
-				property b5 = new property(8,2,3);
-				property b6 = new property(8,2,3);
-				property b7 = new property(8,2,3);
-				property b8 = new property(8,2,3);
-				property b9 = new property(9,2,3);
-				property b10 = new property(9,2,3);
-				property b11 = new property(9,2,3);
-				property b12 = new property(9,2,3);
-				property b13 = new property(10,2,3);
-				property g1 = new property(11, 3,6);
-				property g2 = new property(11, 3,6);
-				property g3 = new property(11, 3,6);
-				property g4 = new property(12, 3,6);
-				property g5 = new property(12, 3,6);
-				property g6 = new property(12, 3,6);
-				property g7 = new property(13, 3,6);
-				property g8 = new property(13, 3,6);
-				property g9 = new property(13, 3,6);
-				
 		
 		//make buttons for each property
+		//initalize properties as vacant and set tooltips and starting fonts
 		JButton btnRedpropone = new JButton("*");
 		btnRedpropone.setVerticalAlignment(SwingConstants.TOP);
 		btnRedpropone.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -1311,6 +1231,7 @@ public class playSlumlord {
 		btnRedpropone.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 68));
 		btnRedpropone.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				//Each property has 6 different actions when clicked depending on the phase and variables
 				//Method of all move in		
 				if(r1.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && r1.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
@@ -3191,6 +3112,8 @@ public class playSlumlord {
 		btnGreenProp9.setBounds(850, 700, 50, 50);
 		frmSlumlord.getContentPane().add(btnGreenProp9);
 		
+		
+		//set button names (now that buttons have been established) for reference when changing property display status
 		r1.ButtonName = btnRedpropone;
 		r2.ButtonName = btnRedproptwo;
 		r3.ButtonName = btnRedProp3;
@@ -3314,7 +3237,7 @@ public class playSlumlord {
 		btnRed.setBounds(1523, 30, 89, 23);
 		frmSlumlord.getContentPane().add(btnRed);	
 		
-		//Button for selecting Blue tenant s
+		//Button for selecting Blue tenant
 		JButton btnBlue = new JButton("Blue");
 		btnBlue.setContentAreaFilled(false);
 		btnBlue.setBorderPainted(false);
@@ -3325,7 +3248,7 @@ public class playSlumlord {
 		btnBlue.setBounds(1622, 30, 89, 23);
 		frmSlumlord.getContentPane().add(btnBlue);
 		
-		//Button for selecting Green Tenants 
+		//Button for selecting Green Tenant
 		JButton btnGreen = new JButton("Green");
 		btnGreen.setContentAreaFilled(false);
 		btnGreen.setBorderPainted(false);
@@ -3336,6 +3259,7 @@ public class playSlumlord {
 		btnGreen.setBounds(1721, 30, 89, 23);
 		frmSlumlord.getContentPane().add(btnGreen);
 		
+		//button to select property to buy, changes phase to 3(buy)
 		JButton btnBuyProperty = new JButton("Buy");
 		btnBuyProperty.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 24));
 		btnBuyProperty.setContentAreaFilled(false);
@@ -3352,6 +3276,7 @@ public class playSlumlord {
 		btnBuyProperty.setBounds(10, 814, 110, 23);
 		frmSlumlord.getContentPane().add(btnBuyProperty);
 		
+		//button to select property to repair, changes phase to 4 (repair)
 		JButton btnRepairProperty = new JButton("Repair");
 		btnRepairProperty.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 24));
 		btnRepairProperty.setContentAreaFilled(false);
@@ -3367,6 +3292,7 @@ public class playSlumlord {
 		btnRepairProperty.setBounds(130, 814, 110, 23);
 		frmSlumlord.getContentPane().add(btnRepairProperty);
 		
+		//button to select property to upgrade, changes phase to 5 (upgrade)
 		JButton btnUpgradeProperty = new JButton("Upgrade");
 		btnUpgradeProperty.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 24));
 		btnUpgradeProperty.setContentAreaFilled(false);
@@ -3382,6 +3308,7 @@ public class playSlumlord {
 		btnUpgradeProperty.setBounds(267, 814, 120, 23);
 		frmSlumlord.getContentPane().add(btnUpgradeProperty);
 		
+		//button to skip leasing phase
 		JButton btnSkipLeasing = new JButton("Skip Leasing");
 		btnSkipLeasing.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -3401,17 +3328,8 @@ public class playSlumlord {
 		btnSkipLeasing.setBounds(1588, 287, 208, 23);
 		frmSlumlord.getContentPane().add(btnSkipLeasing);
 		
-		JLabel Winner = new JLabel("");
-		Winner.setHorizontalAlignment(SwingConstants.CENTER);
-		Winner.setForeground(Color.WHITE);
-		Winner.setOpaque(true);
-		Winner.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-		Winner.setBackground(Color.BLACK);
-		Winner.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 46));
-		Winner.setVisible(false);
-		Winner.setBounds(589, 224, 752, 69);
-		frmSlumlord.getContentPane().add(Winner);
 		
+		//Button Actions:
 		//Button for ending player turn and cycling rounds
 		JButton btnEndTurn = new JButton("End Turn");
 		btnEndTurn.setForeground(Color.WHITE);
@@ -3420,11 +3338,15 @@ public class playSlumlord {
 		btnEndTurn.setVisible(false);
 		btnEndTurn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				//if at the end of one players turn but not the entire round
 				if(playersTurn < players -1)
 				{
+					//reset damage variables so no damage can be done unintentionally
 					playerChars.get(playersTurn).DamageVar = -1;
+					//increment players turn
 					playersTurn++;
 					playerChars.get(playersTurn).DamageVar = -1;
+					//reset all buttons to begening of turn format
 					btnBuyProperty.setVisible(false);
 					btnRepairProperty.setVisible(false);
 					btnUpgradeProperty.setVisible(false);
@@ -3435,24 +3357,31 @@ public class playSlumlord {
 					btnSkipLeasing.setVisible(true);
 					CardDisplay.setVisible(false);
 					diceResults.setVisible(false);
-					
+					//change character card to next player and set text 
 					characterCard.setText(playerChars.get(playersTurn).charCard() );
 					Turn.setText("<html>"+ playerChars.get(playersTurn).Name + "'s Turn Pick a Tenant from the Avaliable Tenants </html>");
+					//Reinitialize dice to 0's
 					currentRoll = new dice(0,0,0);
-					//System.out.println(currentRoll);
+					//reset rerolls
 					playerChars.get(playersTurn).reroll = 0;
+					//reset phase to 1 (tenant move in)
 					phase = 1;
 					playerChars.get(playersTurn).DamageVar = -1;
+					//show discard button if character is scotty
 					if(playerChars.get(playersTurn).SkillNum == -1)
 					{
 						playerChars.get(playersTurn).SkillNum = 1;
 						
 					}
 				}
+				//if it is the end of the round 
 				else 
-				{
-					if(round < 13)
+				{	
+					
+					//and not the end of the game
+					if(round < totalRounds +1)
 					{
+						//cycle player turn order(player 1 becomes 2, 2 becomes 3 ect..) to ensure players have equal shot at the tenants and properties
 						if(players == 2)
 						{
 							character hold0 = new character("","","",1,1,1,"",1);
@@ -3462,6 +3391,7 @@ public class playSlumlord {
 							playerChars.add(0,hold1);
 							playerChars.add(1,hold0);
 						}
+						//cycle player turn order(player 1 becomes 2, 2 becomes 3 ect..) to ensure players have equal shot at the tenants and properties
 						if(players == 3)
 						{
 							character hold0 = new character("","","",1,1,1,"",1);
@@ -3474,6 +3404,7 @@ public class playSlumlord {
 							playerChars.add(1,hold2);
 							playerChars.add(2,hold0);	
 						}
+						//cycle player turn order(player 1 becomes 2, 2 becomes 3 ect..) to ensure players have equal shot at the tenants and properties
 						if(players == 4)
 						{
 							character hold0 = new character("","","",1,1,1,"",1);
@@ -3489,6 +3420,7 @@ public class playSlumlord {
 							playerChars.add(2,hold1);	
 							playerChars.add(3,hold2);
 						}
+						//reset buttons and frames to start of round 
 						btnBuyProperty.setVisible(false);
 						btnRepairProperty.setVisible(false);
 						btnUpgradeProperty.setVisible(false);
@@ -3499,26 +3431,39 @@ public class playSlumlord {
 						btnEndTurn.setVisible(false);
 						CardDisplay.setVisible(false);
 						diceResults.setVisible(false);
+						//reset damage variables so no damage can be done unintentionally
 						playerChars.get(playersTurn).DamageVar = -1;
+						//set player turns back to zero
 						playersTurn = 0;
 						playerChars.get(playersTurn).DamageVar = -1;
+						//increment round
 						round++;
+						//display proper character card and text
 						characterCard.setText(playerChars.get(playersTurn).charCard() );
 						Turn.setText("<html>" + playerChars.get(playersTurn).Name + "'s Turn Pick a Tenant from the Avaliable Tenants </html>");
+						//set phase to 1 (tenant move in)
 						phase = 1;
+						//Reset dice to 0's
 						currentRoll = new dice(0,0,0);
+						//reset rerolls
 						playerChars.get(playersTurn).reroll = 0;
+						//Reset tenant tokens
 						game = new tenantTokens();
-						avaliable = game.RandomDraw(game, round);
+						//draw new set of tenant tokens for new round
+						avaliable = game.RandomDraw(game, round, players);
+						//display new set of tenant tokens
 						avaliableTenants.setText("<html>Round&nbsp;" + round + "<br>" + "Tenants Avaliable<br>Red:" + avaliable.RedTenant + "<br>Blue:" + avaliable.BlueTenant + "<br>Green:" + avaliable.GreenTenant + "</html>");
+						//add money to martin character because of his unique skill
 						Martin.Bank = Martin.Bank + 200;
+						//reset scottys skill number so he will have the discard option again
 						if(playerChars.get(playersTurn).SkillNum == -1)
 						{
 							playerChars.get(playersTurn).SkillNum = 1;
 							
 						}
 					}
-					if(round == 13)
+					//if game is over, make all property buttons dissappear
+					if(round == totalRounds + 1)
 					{
 						btnRedpropone.setVisible(false);
 						btnRedproptwo.setVisible(false);
@@ -3561,17 +3506,22 @@ public class playSlumlord {
 						btnGreenProp8.setVisible(false);
 						btnGreenProp9.setVisible(false);
 						btnNextPlayer.setVisible(false);
+						//calculate winning scores
 						for(int e = 0; e < players; e++)
 						{
+							//make variable for all characters property damages combined
 							int allDamage = 0;
+							//iterate over all characters properties, adding up damage
 							for(int g = 0; g < playerChars.get(e).AllOwned.size(); g++)
 							{
 								
 								int finalDamage = playerChars.get(e).AllOwned.get(g).Damage;
 								allDamage = allDamage + finalDamage;
 							}
+							//take the total damage times 200 and subtract from players bank
 							playerChars.get(e).Bank = playerChars.get(e).Bank - (allDamage * 200);
 						}
+						//iterate over all players and add up their total properties owned times the cost and add to their bank
 						for( int f = 0; f < players; f++)
 						{
 							int R = playerChars.get(f).RedOwned * 800;
@@ -3579,6 +3529,7 @@ public class playSlumlord {
 							int G = playerChars.get(f).GreenOwned * 2000;
 							playerChars.get(f).Bank = playerChars.get(f).Bank + R + B + G;
 						}
+						//set up winner display based on who has the most money in the bank
 						if(players == 2)
 						{
 							if(playerChars.get(0).Bank >= playerChars.get(1).Bank)
@@ -3664,6 +3615,47 @@ public class playSlumlord {
 		btnEndTurn.setBounds(396, 814, 176, 23);
 		frmSlumlord.getContentPane().add(btnEndTurn);
 		
+		//action for total rounds
+		
+		btnTotalRounds6.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				list.setVisible(true);
+				btnSelectCharacter.setVisible(true);
+				Turn.setVisible(true);
+				Turn.setText("<html>Click a Character in the List then Click Select Character</html>");
+				btnTotalRounds6.setVisible(false);
+				btnTotalRounds12.setVisible(false);
+				btnTotalRounds24.setVisible(false);
+				totalRounds = 6;
+			}
+		});
+		
+		btnTotalRounds12.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				list.setVisible(true);
+				btnSelectCharacter.setVisible(true);
+				Turn.setVisible(true);
+				Turn.setText("<html>Click a Character in the List then Click Select Character</html>");
+				btnTotalRounds6.setVisible(false);
+				btnTotalRounds12.setVisible(false);
+				btnTotalRounds24.setVisible(false);
+				totalRounds = 12;
+			}
+		});
+		btnTotalRounds24.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				list.setVisible(true);
+				btnSelectCharacter.setVisible(true);
+				Turn.setVisible(true);
+				Turn.setText("<html>Click a Character in the List then Click Select Character</html>");
+				btnTotalRounds6.setVisible(false);
+				btnTotalRounds12.setVisible(false);
+				btnTotalRounds24.setVisible(false);
+				totalRounds = 24;
+			}
+		});
+		
+		//set background to galaxy game board
 		JLabel lblNewLabel = new JLabel("");
 		lblNewLabel.setIcon(new ImageIcon(playSlumlord.class.getResource("/images/Background 1.jpg")));
 		lblNewLabel.setBounds(0, 0, 1920, 1080);
@@ -3672,9 +3664,12 @@ public class playSlumlord {
 		//actions for red tenant select
 		btnRed.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//if red tenant is available
 				if(avaliable.RedTenant > 0 || playerChars.get(playersTurn).SkillNum == 3)
 				{
+					//set current tenant to 1(red)
 					currentTenant = 1;
+					//check how many properties the player owns and make appropriate dice selection available
 					if(playerChars.get(playersTurn).AllOwned.size() >= 4)
 					{
 						btnDice4.setVisible(true);
@@ -3701,6 +3696,7 @@ public class playSlumlord {
 					btnGreen.setVisible(false);
 					Turn.setText("<html>Select How Many Dice to Use</html>");
 				}
+				//if none of those tenants are available, update player
 				else
 				{
 					Turn.setText("Sorry No Red Tenants Avaliable");
@@ -3710,9 +3706,12 @@ public class playSlumlord {
 		//actions for blue tenant select
 		btnBlue.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//if Blue tenant is available
 				if(avaliable.BlueTenant > 0 || playerChars.get(playersTurn).SkillNum == 3)
 				{
+					//set current tenant to 2(blue)
 					currentTenant = 2;
+					//check how many properties the player owns and make appropriate dice selection available
 					if(playerChars.get(playersTurn).AllOwned.size() >= 4)
 					{
 						btnDice4.setVisible(true);
@@ -3740,6 +3739,7 @@ public class playSlumlord {
 				}
 				else
 				{
+					//if none of those tenants are available, update player
 					Turn.setText("Sorry No Blue Tenants Avaliable");
 				}	
 			}
@@ -3748,9 +3748,12 @@ public class playSlumlord {
 		//actions for green tenant button
 		btnGreen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//if Green tenant is available
 				if(avaliable.GreenTenant > 0 || playerChars.get(playersTurn).SkillNum == 3)
 				{
+					//set current tenant to 3(green)
 					currentTenant = 3;
+					//check how many properties the player owns and make appropriate dice selection available
 					if(playerChars.get(playersTurn).AllOwned.size() >= 4)
 					{
 						btnDice4.setVisible(true);
@@ -3778,6 +3781,7 @@ public class playSlumlord {
 				}
 				else
 				{
+					//if none of those tenants are available, update player
 					Turn.setText("Sorry No Green Tenants Avaliable");
 				}
 			}
@@ -3786,14 +3790,15 @@ public class playSlumlord {
 		//actions for player selection button
 		two.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//Sets players to 2
 				players = 2;
-				list.setVisible(true);
+				btnTotalRounds6.setVisible(true);
+				btnTotalRounds12.setVisible(true);
+				btnTotalRounds24.setVisible(true);
 				two.setVisible(false);
 				three.setVisible(false);
 				four.setVisible(false);
-				btnSelectCharacter.setVisible(true);
-				Turn.setVisible(true);
-				Turn.setText("<html>Click a Character in the List then Click Select Character</html>");
+				
 			}
 		});
 		
@@ -3802,36 +3807,40 @@ public class playSlumlord {
 		//actions for player selection button
 		three.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//Sets players to 3
 				players = 3;
-				list.setVisible(true);
+				btnTotalRounds6.setVisible(true);
+				btnTotalRounds12.setVisible(true);
+				btnTotalRounds24.setVisible(true);
 				two.setVisible(false);
 				three.setVisible(false);
 				four.setVisible(false);
-				btnSelectCharacter.setVisible(true);
-				Turn.setVisible(true);
-				Turn.setText("<html>Click a Character in the List then Click Select Character</html>");
+				
 			}
 		});
 		//actions for player selection button
 		four.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//Sets players to 4
 				players = 4;
-				list.setVisible(true);
+				btnTotalRounds6.setVisible(true);
+				btnTotalRounds12.setVisible(true);
+				btnTotalRounds24.setVisible(true);
 				two.setVisible(false);
 				three.setVisible(false);
 				four.setVisible(false);
-				btnSelectCharacter.setVisible(true);
-				Turn.setVisible(true);
-				Turn.setText("<html>Click a Character in the List then Click Select Character</html>");
+				
 			}
 		});
 		
 		//actions for round 0 next player button
 		btnNextPlayer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//increments player and updates player card
 				playersTurn++;
 				characterCard.setText(playerChars.get(playersTurn).charCard());
 				Turn.setText("<html>" + playerChars.get(playersTurn).Name + "'s Turn Pick Your First Property (Must be a Red Property)</html>");
+				//sets start round one when all players have selected
 				if(playersTurn == players -1)
 				{
 					btnNextPlayer.setVisible(false);
@@ -3843,11 +3852,12 @@ public class playSlumlord {
 		//actions for select character button
 		btnSelectCharacter.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+					//adds selected character to array 
 					int j = playerChars.size();
 					character p = list.getSelectedValue();
 					playerChars.add(p);
-					//System.out.println(playerChars.get(i));
 					Turn.setText("<html>Next Player Click a Character in the List then Click Select Character</html>");
+					//once all players have chosen a character initialize game board
 					if(j == players -1)
 					{
 						btnSelectCharacter.setVisible(false);
@@ -3897,16 +3907,17 @@ public class playSlumlord {
 						btnGreenProp8.setVisible(true);
 						btnGreenProp9.setVisible(true);
 						btnNextPlayer.setVisible(true);
-						//System.out.println(playerChars.get(0));
 						Turn.setText("<html>" + playerChars.get(playersTurn).Name + "'s Turn Pick Your First Property (Must be a Red Property)</html>");
+						//set phase to 3 so players can select their first property before round one starts
 						phase = 3;
+						//create strings to use as player color identifiers
 						String a = "Ivory";
 						String b = "Yellow";
 						String c = "LimeGreen";
 						String d = "DarkBlue";
 						
 					
-								
+							//set selected characters to most visible colors	
 							if(players == 2)
 							{
 								playerChars.get(0).PlayerColor = a;
@@ -3931,40 +3942,47 @@ public class playSlumlord {
 					
 			}
 		});
-		//initalizes board and starts round 1
+		//Initializes board and starts round 1
 		btnStartRoundOne.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//set player turn to 0
 				playersTurn = 0;
+				//iterates over all characters and gives them initial 500 to start game with
 				for( int i = 0; i < players; i++)
 				{
 					playerChars.get(i).Bank = playerChars.get(i).Bank + 500;
 					playerChars.get(i).PlayerNumber = i;
 				}
-				
+				//make labels and buttons visible
 				avaliableTenants.setVisible(true);
 				btnSkipLeasing.setVisible(true);
 				btnRed.setVisible(true);
 				btnBlue.setVisible(true);
 				btnGreen.setVisible(true);
-				//CardDisplay.setVisible(true);
+				//randomly choose the first grouping of tenant tokens
 				game = new tenantTokens();
-				avaliable = game.RandomDraw(game, round);
+				avaliable = game.RandomDraw(game, round, players);
+				//display tenant tokens and character cards
 				avaliableTenants.setText("<html>Round" + round + "<br>" + "Tenants Avaliable<br>Red:" + avaliable.RedTenant + "<br>Blue:" + avaliable.BlueTenant + "<br>Green:" + avaliable.GreenTenant + "</html>");
-				characterCard.setText(playerChars.get(playersTurn).charCard() );
+				characterCard.setText(playerChars.get(playersTurn).charCard());
 				Turn.setText("<html>"+ playerChars.get(playersTurn).Name + "'s Turn Pick a Tenant from the Avaliable Tenants </html>");
 				btnStartRoundOne.setVisible(false);
+				//change to phase 1(tenant move in) to start round 1
 				phase = 1;
 								
 			}
 		});
 		btnNextPhase.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//at the end of leasing round, next phase appears
 				btnNextPhase.setVisible(false);
 				diceResults.setVisible(false);
 				btnDiscard.setVisible(false);
 				btnSkipLeasing.setVisible(false);
+				//tallies up money based on properties occupied and adds to bank
 				int money = (playerChars.get(playersTurn).RedOccupied * playerChars.get(playersTurn).RentRed) + (playerChars.get(playersTurn).BlueOccupied * playerChars.get(playersTurn).RentBlue)
 						+ (playerChars.get(playersTurn).GreenOccupied * playerChars.get(playersTurn).RentGreen);
+				//set variables to count how many of each cluster of properties is owned
 				int ones = 0;
 				int twos = 0;
 				int threes = 0;
@@ -3975,8 +3993,9 @@ public class playSlumlord {
 				int twelves = 0;
 				int thirteens = 0;
 				
+				//for all players
 				for(int i = 0; i < playerChars.get(playersTurn).AllOwned.size(); i++)
-				{
+				{	//iterate through all properties and recored how many of each cluster(neighborhood) is owned
 					int r = playerChars.get(playersTurn).AllOwned.get(i).Hood;
 					if( r == 1)
 						ones = ones +1;
@@ -3997,6 +4016,7 @@ public class playSlumlord {
 					if( r == 13)
 						thirteens = thirteens +1;
 				}
+				//if all 5 red, 4 blue, 3 green of each hood is owned, add a bonus money to bank
 				if(ones == 5)
 					playerChars.get(playersTurn).Bank = playerChars.get(playersTurn).Bank + 400;
 				if(twos == 5)
@@ -4016,9 +4036,12 @@ public class playSlumlord {
 				if(thirteens == 3)
 					playerChars.get(playersTurn).Bank = playerChars.get(playersTurn).Bank + 1000;
 					
+				//update character card display
 				playerChars.get(playersTurn).Bank = playerChars.get(playersTurn).Bank + money;
 				characterCard.setText(playerChars.get(playersTurn).charCard() );
+				//set phase to 9 (blank phase) so nothing can be done to a property without first selecting an action
 				phase = 9;
+				//set option buttons to visible and update player text
 				btnBuyProperty.setVisible(true);
 				btnRepairProperty.setVisible(true);
 				btnUpgradeProperty.setVisible(true);
@@ -4029,7 +4052,7 @@ public class playSlumlord {
 				
 			}
 		});
-		
+		//set dice number for tenant move in roll
 		btnDice3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				playerChars.get(playersTurn).numDice = 3;
@@ -4042,6 +4065,7 @@ public class playSlumlord {
 				Turn.setText("<html> Click the Property You Want to Move This Tenant Into</html>");
 			}
 		});
+		//set dice number for tenant move in roll
 		btnDice4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				playerChars.get(playersTurn).numDice = 4;
@@ -4054,6 +4078,7 @@ public class playSlumlord {
 				Turn.setText("<html> Click the Property You Want to Move This Tenant Into</html>");
 			}
 		});
+		//set dice number for tenant move in roll
 		btnDice5.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				playerChars.get(playersTurn).numDice = 5;
@@ -4066,6 +4091,7 @@ public class playSlumlord {
 				Turn.setText("<html> Click the Property You Want to Move This Tenant Into</html>");
 			}
 		});
+		//set dice number for tenant move in roll
 		btnDice6.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				playerChars.get(playersTurn).numDice = 6;
@@ -4078,6 +4104,7 @@ public class playSlumlord {
 				Turn.setText("<html> Click the Property You Want to Move This Tenant Into</html>");
 			}
 		});
+		//set dice number for tenant move in roll
 		btnDice7.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				playerChars.get(playersTurn).numDice = 7;
@@ -4090,6 +4117,7 @@ public class playSlumlord {
 				Turn.setText("<html> Click the Property You Want to Move This Tenant Into</html>");
 			}
 		});
+		//set dice number for tenant move in roll
 		btnDice8.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				playerChars.get(playersTurn).numDice = 8;
@@ -4102,23 +4130,31 @@ public class playSlumlord {
 				Turn.setText("<html> Click the Property You Want to Move This Tenant Into</html>");
 			}
 		});
+		//action for take bank button
 		btnTakeBank.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//if a player has no property to damage and draws a repair card
+				//subtract 200 from their bank
 				playerChars.get(playersTurn).Bank = playerChars.get(playersTurn).Bank - 200;
+				//update player card
 				characterCard.setText(playerChars.get(playersTurn).charCard() );
 				btnTakeBank.setVisible(false);
 				btnDrawCard.setVisible(false);
+				//subtract 1 from red dice/cards and update label
 				currentRoll.Red = currentRoll.Red - 1;
 				diceResults.setText("<html>Dice Roll Results" + "<br>" + "Red:" + currentRoll.Red + "<br>Blue:" + currentRoll.Blue + "<br>Green:" + currentRoll.Green + "</html>");
+				//if cards/dice remain draw again
 				if(currentRoll.Red > 0)
 				{
 					btnDrawCard.setVisible(true);
 				}
-				if(currentRoll.Blue > 0)
+				//if no red but blues are available, draw blue
+				else if(currentRoll.Blue > 0)
 				{
 					btnDrawCard.setVisible(true);
 					playerChars.get(playersTurn).DamageVar = -1;
 				}
+				//if neither are available move to next phase
 				else
 				{
 					btnNextPhase.setVisible(true);
@@ -4126,10 +4162,8 @@ public class playSlumlord {
 				}
 			}
 		});
-		
 	}
 }
-
 
 
 

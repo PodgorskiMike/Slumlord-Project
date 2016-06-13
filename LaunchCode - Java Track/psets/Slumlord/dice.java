@@ -16,19 +16,22 @@ public class dice {
 		this.Blue = blue;
 		
 	}
-		
+		//random die roll
 		public dice Roll(int Numdice)
 		{
+			//Initialize dice to 0
 			dice Results = new dice(0,0,0);
 			this.Red = 0;
 			this.Blue = 0;
 			this.Green = 0;
-			//dice Results2 = new dice()
 			
+			//make random generator
 			Random generator = new Random();
+			//roll as many times as dice selected
 			for(int i = 0; i < Numdice; i++)
 			{
 				int j = generator.nextInt(6)+1;
+				//add to red blue or green category as rolls cycle
 				if(j == 1)
 					this.Blue = this.Blue + 1;
 				if(j == 2)
@@ -42,7 +45,7 @@ public class dice {
 				if(j == 6)
 					this.Green = this.Green + 2;
 			}
-			
+			//return results
 			Results = this;
 		return Results;
 		}
@@ -50,12 +53,6 @@ public class dice {
 		public String toString()
 		{
 			return this.Red + " " + this.Blue + " " + this.Green;
-		}
-		
-		public static void main(String args[])
-		{
-			
-			
 		}
 		
 	}

@@ -34,8 +34,4 @@ public class property {
 	{
 		return "" + this.Damage + "";
 	}
-	
-	public static void main(String args[])
-	{
-	}
 }
