@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import javax.swing.ListSelectionModel;
@@ -25,6 +27,7 @@ import java.awt.Dimension;
 import javax.swing.border.LineBorder;
 import java.awt.SystemColor;
 import javax.swing.border.BevelBorder;
+import javax.swing.JScrollBar;
 
 public class playSlumlord {
 	
@@ -43,6 +46,9 @@ public class playSlumlord {
 	
 	//variable for what round it is
 	int round = 1;
+	
+	//string for what round
+	String roundS = "0";
 	
 	//variable for tenant selected to move in
 	int currentTenant;
@@ -98,6 +104,34 @@ public class playSlumlord {
 		initialize();
 	}
 
+	
+	//create CSV method
+	private static void generateCsvFile(String sFileName, String round, String player, String action, String outcome)
+	   {
+
+		boolean exists = true;
+		try {
+			FileWriter writer = new FileWriter(sFileName,exists);
+			 writer.append(round);
+			 writer.append(player);
+			 writer.append(action);
+			 writer.append(outcome);
+			 writer.append('\n');
+			 
+			 writer.flush();
+			 writer.close();
+		
+		
+		
+		
+		
+		
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+}
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -115,7 +149,7 @@ public class playSlumlord {
 		//Additional JLables to Display all Game Info
 		//welcome label
 		JLabel lblWelcomeToSlumlord = new JLabel("Galactic Slumlord");
-		lblWelcomeToSlumlord.setForeground(Color.WHITE);
+		lblWelcomeToSlumlord.setForeground(Color.BLUE);
 		lblWelcomeToSlumlord.setFont(new Font("Copperplate Gothic Light", Font.PLAIN, 85));
 		lblWelcomeToSlumlord.setHorizontalAlignment(SwingConstants.CENTER);
 		lblWelcomeToSlumlord.setBounds(451, 82, 1100, 100);
@@ -804,6 +838,7 @@ public class playSlumlord {
 		JButton btnDiscard = new JButton("Discard");
 		btnDiscard.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Discarded","");
 				//remove card text
 				CardDisplay.setText("");
 				btnDiscard.setVisible(false);
@@ -855,6 +890,7 @@ public class playSlumlord {
 				//if red dice are present, change display color to red and phase to 2 (damage from repair cards) 
 				if(currentRoll.Red > 0)
 				{		
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Draw Card",",Red");
 					CardDisplay.setForeground(Color.RED);
 					phase = 2;
 					//if the deck of repair cards have all been used, take all cards from used pile and move back to all pile
@@ -921,6 +957,7 @@ public class playSlumlord {
 				//once all red cards/dice are dealt with move on to blue cards/dice
 				else if(currentRoll.Blue > 0)
 				{
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Draw Card",",Blue");
 					//if all cards have been used, copy usedE into allE
 					if(allE.size() == 0)
 					{
@@ -1236,29 +1273,31 @@ public class playSlumlord {
 				if(r1.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && r1.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInRed(r1, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnRedpropone, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnRedpropone, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
+					//generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,playerChars.get(playersTurn).Name, ",Rolled To Move In");
 				}
 				//method for adding damage to property
 				if(r1.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar != -1 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( r1, playerChars, playersTurn, phase, characterCard, btnRedpropone, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(r1.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( r1, playerChars, playersTurn, phase, characterCard, btnRedpropone);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Red");
 				}
 				//method for repairing
 				if(r1.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(r1, btnRedpropone, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(r1, btnRedpropone, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(r1.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(r1, btnRedpropone, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(r1, btnRedpropone, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(r1.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -1288,29 +1327,30 @@ public class playSlumlord {
 				if(r2.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && r2.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInRed(r2, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnRedproptwo, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnRedproptwo, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(r2.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar != -1 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( r2, playerChars, playersTurn, phase, characterCard, btnRedproptwo, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(r2.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( r2, playerChars, playersTurn, phase, characterCard, btnRedproptwo);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Red");
 				}
 				//method for repairing
 				if(r2.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(r2, btnRedproptwo, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(r2, btnRedproptwo, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(r2.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(r2, btnRedproptwo, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(r2, btnRedproptwo, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(r2.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -1335,29 +1375,30 @@ public class playSlumlord {
 				if(r3.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && r3.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInRed(r3, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnRedProp3, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnRedProp3, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(r3.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar != -1 && phase == 2|| phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( r3, playerChars, playersTurn, phase, characterCard, btnRedProp3, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(r3.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( r3, playerChars, playersTurn, phase, characterCard, btnRedProp3);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Red");
 				}
 				//method for repairing
 				if(r3.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(r3, btnRedProp3, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(r3, btnRedProp3, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(r3.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(r3, btnRedProp3, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(r3, btnRedProp3, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(r3.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -1382,29 +1423,30 @@ public class playSlumlord {
 				if(r4.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && r4.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInRed(r4, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnRedProp4, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnRedProp4, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(r4.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar != -1 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( r4, playerChars, playersTurn, phase, characterCard, btnRedProp4, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(r4.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( r4, playerChars, playersTurn, phase, characterCard, btnRedProp4);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Red");
 				}
 				//method for repairing
 				if(r4.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(r4, btnRedProp4, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(r4, btnRedProp4, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(r4.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(r4, btnRedProp4, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(r4, btnRedProp4, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(r4.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -1429,29 +1471,30 @@ public class playSlumlord {
 				if(r5.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && r5.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInRed(r5, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnRedProp5, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnRedProp5, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(r5.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar != -1 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( r5, playerChars, playersTurn, phase, characterCard, btnRedProp5, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(r5.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( r5, playerChars, playersTurn, phase, characterCard, btnRedProp5);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Red");
 				}
 				//method for repairing
 				if(r5.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(r5, btnRedProp5, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(r5, btnRedProp5, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(r5.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(r5, btnRedProp5, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(r5, btnRedProp5, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(r5.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -1476,29 +1519,30 @@ public class playSlumlord {
 				if(r6.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && r6.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInRed(r6, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnRedProp6, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnRedProp6, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(r6.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar != -1 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( r6, playerChars, playersTurn, phase, characterCard, btnRedProp6, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(r6.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( r6, playerChars, playersTurn, phase, characterCard, btnRedProp6);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Red");
 				}
 				//method for repairing
 				if(r6.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(r6, btnRedProp6, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(r6, btnRedProp6, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(r6.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(r6, btnRedProp6, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(r6, btnRedProp6, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(r6.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -1523,29 +1567,30 @@ public class playSlumlord {
 				if(r7.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && r7.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInRed(r7, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnRedProp7, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnRedProp7, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(r7.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar != -1 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( r7, playerChars, playersTurn, phase, characterCard, btnRedProp7, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(r7.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( r7, playerChars, playersTurn, phase, characterCard, btnRedProp7);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Red");
 				}
 				//method for repairing
 				if(r7.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(r7, btnRedProp7, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(r7, btnRedProp7, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(r7.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(r7, btnRedProp7, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(r7, btnRedProp7, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(r7.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -1570,29 +1615,30 @@ public class playSlumlord {
 				if(r8.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && r8.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInRed(r8, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnRedProp8, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnRedProp8, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(r8.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar != -1 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( r8, playerChars, playersTurn, phase, characterCard, btnRedProp8, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(r8.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( r8, playerChars, playersTurn, phase, characterCard, btnRedProp8);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Red");
 				}
 				//method for repairing
 				if(r8.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(r8, btnRedProp8, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(r8, btnRedProp8, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(r8.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(r8, btnRedProp8, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(r8, btnRedProp8, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(r8.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -1617,29 +1663,30 @@ public class playSlumlord {
 				if(r9.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && r9.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInRed(r9, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnRedProp9, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnRedProp9, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(r9.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar != -1 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( r9, playerChars, playersTurn, phase, characterCard, btnRedProp9, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(r9.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( r9, playerChars, playersTurn, phase, characterCard, btnRedProp9);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Red");
 				}
 				//method for repairing
 				if(r9.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(r9, btnRedProp9, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(r9, btnRedProp9, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(r9.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(r9, btnRedProp9, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(r9, btnRedProp9, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(r9.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -1664,29 +1711,30 @@ public class playSlumlord {
 				if(r10.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && r10.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInRed(r10, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnRedProp10, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnRedProp10, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(r10.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar != -1 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( r10, playerChars, playersTurn, phase, characterCard, btnRedProp10, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(r10.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( r10, playerChars, playersTurn, phase, characterCard, btnRedProp10);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Red");
 				}
 				//method for repairing
 				if(r10.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(r10, btnRedProp10, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(r10, btnRedProp10, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(r10.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(r10, btnRedProp10, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(r10, btnRedProp10, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(r10.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -1711,29 +1759,30 @@ public class playSlumlord {
 				if(r11.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && r11.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInRed(r11, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnRedProp11, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnRedProp11, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(r11.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar != -1 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( r11, playerChars, playersTurn, phase, characterCard, btnRedProp11, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(r11.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( r11, playerChars, playersTurn, phase, characterCard, btnRedProp11);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Red");
 				}
 				//method for repairing
 				if(r11.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(r11, btnRedProp11, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(r11, btnRedProp11, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(r11.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(r11, btnRedProp11, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(r11, btnRedProp11, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(r11.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -1758,29 +1807,30 @@ public class playSlumlord {
 				if(r12.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && r12.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInRed(r12, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnRedProp12, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnRedProp12, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(r12.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar != -1 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( r12, playerChars, playersTurn, phase, characterCard, btnRedProp12, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(r12.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( r12, playerChars, playersTurn, phase, characterCard, btnRedProp12);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Red");
 				}
 				//method for repairing
 				if(r12.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(r12, btnRedProp12, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(r12, btnRedProp12, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(r12.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(r12, btnRedProp12, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(r12, btnRedProp12, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(r12.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -1805,29 +1855,30 @@ public class playSlumlord {
 				if(r13.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && r13.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInRed(r13, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnRedProp13, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnRedProp13, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(r13.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar != -1 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( r13, playerChars, playersTurn, phase, characterCard, btnRedProp13, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(r13.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( r13, playerChars, playersTurn, phase, characterCard, btnRedProp13);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Red");
 				}
 				//method for repairing
 				if(r13.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(r13, btnRedProp13, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(r13, btnRedProp13, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(r13.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(r13, btnRedProp13, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(r13, btnRedProp13, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(r13.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -1852,29 +1903,30 @@ public class playSlumlord {
 				if(r14.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && r14.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInRed(r14, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnRedProp14, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnRedProp14, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(r14.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar != -1 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( r14, playerChars, playersTurn, phase, characterCard, btnRedProp14, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(r14.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( r14, playerChars, playersTurn, phase, characterCard, btnRedProp14);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Red");
 				}
 				//method for repairing
 				if(r14.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(r14, btnRedProp14, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(r14, btnRedProp14, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(r14.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(r14, btnRedProp14, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(r14, btnRedProp14, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(r14.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -1899,29 +1951,30 @@ public class playSlumlord {
 				if(r15.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && r15.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInRed(r15, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnRedProp15, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnRedProp15, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(r15.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar != -1 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( r15, playerChars, playersTurn, phase, characterCard, btnRedProp15, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(r15.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( r15, playerChars, playersTurn, phase, characterCard, btnRedProp15);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Red");
 				}
 				//method for repairing
 				if(r15.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(r15, btnRedProp15, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(r15, btnRedProp15, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(r15.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(r15, btnRedProp15, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(r15, btnRedProp15, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(r15.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -1946,29 +1999,30 @@ public class playSlumlord {
 				if(r16.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && r16.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInRed(r16, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnRedProp16, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnRedProp16, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(r16.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar != -1 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( r16, playerChars, playersTurn, phase, characterCard, btnRedProp16, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(r16.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( r16, playerChars, playersTurn, phase, characterCard, btnRedProp16);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Red");
 				}
 				//method for repairing
 				if(r16.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(r16, btnRedProp16, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(r16, btnRedProp16, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(r16.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(r16, btnRedProp16, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(r16, btnRedProp16, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(r16.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -1993,29 +2047,30 @@ public class playSlumlord {
 				if(r17.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && r17.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInRed(r17, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnRedProp17, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnRedProp17, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(r17.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar != -1 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( r17, playerChars, playersTurn, phase, characterCard, btnRedProp17, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(r17.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( r17, playerChars, playersTurn, phase, characterCard, btnRedProp17);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Red");
 				}
 				//method for repairing
 				if(r17.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(r17, btnRedProp17, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(r17, btnRedProp17, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(r17.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(r17, btnRedProp17, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(r17, btnRedProp17, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(r17.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -2040,29 +2095,30 @@ public class playSlumlord {
 				if(r18.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && r18.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInRed(r18, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnRedProp18, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnRedProp18, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(r18.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar != -1 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( r18, playerChars, playersTurn, phase, characterCard, btnRedProp18, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(r18.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( r18, playerChars, playersTurn, phase, characterCard, btnRedProp18);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Red");
 				}
 				//method for repairing
 				if(r18.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(r18, btnRedProp18, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(r18, btnRedProp18, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(r18.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(r18, btnRedProp18, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(r18, btnRedProp18, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(r18.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -2087,29 +2143,30 @@ public class playSlumlord {
 				if(b1.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && b1.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInBlue(b1, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnBlueProp1, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnBlueProp1, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(b1.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == 2 || playerChars.get(playersTurn).DamageVar == 0 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( b1, playerChars, playersTurn, phase, characterCard, btnBlueProp1, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(b1.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( b1, playerChars, playersTurn, phase, characterCard, btnBlueProp1);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Blue");
 				}
 				//method for repairing
 				if(b1.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(b1, btnBlueProp1, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(b1, btnBlueProp1, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(b1.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(b1, btnBlueProp1, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(b1, btnBlueProp1, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(b1.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -2134,29 +2191,30 @@ public class playSlumlord {
 				if(b2.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && b2.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInBlue(b2, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnBlueProp2, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnBlueProp2, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(b2.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == 2 || playerChars.get(playersTurn).DamageVar == 0 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( b2, playerChars, playersTurn, phase, characterCard, btnBlueProp2, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(b2.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( b2, playerChars, playersTurn, phase, characterCard, btnBlueProp2);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Blue");
 				}
 				//method for repairing
 				if(b2.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(b2, btnBlueProp2, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(b2, btnBlueProp2, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(b2.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(b2, btnBlueProp2, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(b2, btnBlueProp2, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(b2.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -2181,29 +2239,30 @@ public class playSlumlord {
 				if(b3.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && b3.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInBlue(b3, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnBlueProp3, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnBlueProp3, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(b3.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == 2 || playerChars.get(playersTurn).DamageVar == 0 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( b3, playerChars, playersTurn, phase, characterCard, btnBlueProp3, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(b3.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( b3, playerChars, playersTurn, phase, characterCard, btnBlueProp3);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Blue");
 				}
 				//method for repairing
 				if(b3.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(b3, btnBlueProp3, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(b3, btnBlueProp3, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(b3.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(b3, btnBlueProp3, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(b3, btnBlueProp3, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(b3.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -2228,29 +2287,30 @@ public class playSlumlord {
 				if(b4.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && b4.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInBlue(b4, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnBlueProp4, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnBlueProp4, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(b4.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == 2 || playerChars.get(playersTurn).DamageVar == 0 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( b4, playerChars, playersTurn, phase, characterCard, btnBlueProp4, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(b4.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( b4, playerChars, playersTurn, phase, characterCard, btnBlueProp4);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Blue");
 				}
 				//method for repairing
 				if(b4.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(b4, btnBlueProp4, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(b4, btnBlueProp4, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(b4.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(b4, btnBlueProp4, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(b4, btnBlueProp4, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(b4.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -2275,29 +2335,30 @@ public class playSlumlord {
 				if(b5.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && b5.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInBlue(b5, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnBlueProp5, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnBlueProp5, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(b5.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == 2 || playerChars.get(playersTurn).DamageVar == 0 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( b5, playerChars, playersTurn, phase, characterCard, btnBlueProp5, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(b5.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( b5, playerChars, playersTurn, phase, characterCard, btnBlueProp5);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Blue");
 				}
 				//method for repairing
 				if(b5.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(b5, btnBlueProp5, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(b5, btnBlueProp5, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(b5.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(b5, btnBlueProp5, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(b5, btnBlueProp5, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(b5.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -2322,29 +2383,30 @@ public class playSlumlord {
 				if(b6.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && b6.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInBlue(b6, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnBlueProp6, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnBlueProp6, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(b6.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == 2|| playerChars.get(playersTurn).DamageVar == 0 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( b6, playerChars, playersTurn, phase, characterCard, btnBlueProp6, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(b6.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( b6, playerChars, playersTurn, phase, characterCard, btnBlueProp6);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Blue");
 				}
 				//method for repairing
 				if(b6.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(b6, btnBlueProp6, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(b6, btnBlueProp6, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(b6.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(b6, btnBlueProp6, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(b6, btnBlueProp6, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(b6.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -2369,29 +2431,30 @@ public class playSlumlord {
 				if(b7.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && b7.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInBlue(b7, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnBlueProp7, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnBlueProp7, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(b7.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == 2 || playerChars.get(playersTurn).DamageVar == 0 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( b7, playerChars, playersTurn, phase, characterCard, btnBlueProp7, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(b7.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( b7, playerChars, playersTurn, phase, characterCard, btnBlueProp7);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Blue");
 				}
 				//method for repairing
 				if(b7.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(b7, btnBlueProp7, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(b7, btnBlueProp7, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(b7.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(b7, btnBlueProp7, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(b7, btnBlueProp7, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(b7.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -2416,29 +2479,30 @@ public class playSlumlord {
 				if(b8.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && b8.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInBlue(b8, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnBlueProp8, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnBlueProp8, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(b8.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == 2 || playerChars.get(playersTurn).DamageVar == 0 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( b8, playerChars, playersTurn, phase, characterCard, btnBlueProp8, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(b8.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( b8, playerChars, playersTurn, phase, characterCard, btnBlueProp8);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Blue");
 				}
 				//method for repairing
 				if(b8.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(b8, btnBlueProp8, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(b8, btnBlueProp8, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(b8.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(b8, btnBlueProp8, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(b8, btnBlueProp8, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(b8.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -2463,29 +2527,30 @@ public class playSlumlord {
 				if(b9.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && b9.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInBlue(b9, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnBlueProp9, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnBlueProp9, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(b9.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == 2 || playerChars.get(playersTurn).DamageVar == 0 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( b9, playerChars, playersTurn, phase, characterCard, btnBlueProp9, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(b9.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( b9, playerChars, playersTurn, phase, characterCard, btnBlueProp9);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Blue");
 				}
 				//method for repairing
 				if(b9.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(b9, btnBlueProp9, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(b9, btnBlueProp9, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(b9.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(b9, btnBlueProp9, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(b9, btnBlueProp9, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(b9.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -2510,29 +2575,30 @@ public class playSlumlord {
 				if(b10.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && b10.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInBlue(b10, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnBlueProp10, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnBlueProp10, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(b10.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == 2 || playerChars.get(playersTurn).DamageVar == 0 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( b10, playerChars, playersTurn, phase, characterCard, btnBlueProp10, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(b10.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( b10, playerChars, playersTurn, phase, characterCard, btnBlueProp10);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Blue");
 				}
 				//method for repairing
 				if(b10.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(b10, btnBlueProp10, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(b10, btnBlueProp10, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(b10.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(b10, btnBlueProp10, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(b10, btnBlueProp10, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(b10.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -2557,29 +2623,30 @@ public class playSlumlord {
 				if(b11.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && b11.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInBlue(b11, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnBlueProp11, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnBlueProp11, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(b11.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == 2 || playerChars.get(playersTurn).DamageVar == 0 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( b11, playerChars, playersTurn, phase, characterCard, btnBlueProp11, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(b11.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( b11, playerChars, playersTurn, phase, characterCard, btnBlueProp11);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Blue");
 				}
 				//method for repairing
 				if(b11.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(b11, btnBlueProp11, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(b11, btnBlueProp11, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(b11.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(b11, btnBlueProp11, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(b11, btnBlueProp11, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(b11.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -2604,29 +2671,30 @@ public class playSlumlord {
 				if(b12.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && b12.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInBlue(b12, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnBlueProp12, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnBlueProp12, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(b12.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == 2 || playerChars.get(playersTurn).DamageVar == 0 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( b12, playerChars, playersTurn, phase, characterCard, btnBlueProp12, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(b12.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( b12, playerChars, playersTurn, phase, characterCard, btnBlueProp12);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Blue");
 				}
 				//method for repairing
 				if(b12.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(b12, btnBlueProp12, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(b12, btnBlueProp12, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(b12.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(b12, btnBlueProp12, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(b12, btnBlueProp12, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(b12.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -2651,29 +2719,30 @@ public class playSlumlord {
 				if(b13.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && b13.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInBlue(b13, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnBlueProp13, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnBlueProp13, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(b13.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == 2 || playerChars.get(playersTurn).DamageVar == 0 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( b13, playerChars, playersTurn, phase, characterCard, btnBlueProp13, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(b13.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( b13, playerChars, playersTurn, phase, characterCard, btnBlueProp13);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Blue");
 				}
 				//method for repairing
 				if(b13.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(b13, btnBlueProp13, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(b13, btnBlueProp13, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(b13.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(b13, btnBlueProp13, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(b13, btnBlueProp13, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(b13.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -2698,29 +2767,30 @@ public class playSlumlord {
 				if(g1.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && g1.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInGreen(g1, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnGreenProp1, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnGreenProp1, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(g1.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == 3 || playerChars.get(playersTurn).DamageVar == 0 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( g1, playerChars, playersTurn, phase, characterCard, btnGreenProp1, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(g1.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( g1, playerChars, playersTurn, phase, characterCard, btnGreenProp1);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Green");
 				}
 				//method for repairing
 				if(g1.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(g1, btnGreenProp1, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(g1, btnGreenProp1, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(g1.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(g1, btnGreenProp1, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(g1, btnGreenProp1, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(g1.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -2745,29 +2815,30 @@ public class playSlumlord {
 				if(g2.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && g2.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInGreen(g2, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnGreenProp2, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnGreenProp2, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(g2.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == 3 || playerChars.get(playersTurn).DamageVar == 0 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( g2, playerChars, playersTurn, phase, characterCard, btnGreenProp2, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(g2.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( g2, playerChars, playersTurn, phase, characterCard, btnGreenProp2);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Green");
 				}
 				//method for repairing
 				if(g2.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(g2, btnGreenProp2, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(g2, btnGreenProp2, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(g2.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(g2, btnGreenProp2, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(g2, btnGreenProp2, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(g2.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -2792,29 +2863,30 @@ public class playSlumlord {
 				if(g3.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && g3.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInGreen(g3, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnGreenProp3, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnGreenProp3, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(g3.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == 3 || playerChars.get(playersTurn).DamageVar == 0 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( g3, playerChars, playersTurn, phase, characterCard, btnGreenProp3, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(g3.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( g3, playerChars, playersTurn, phase, characterCard, btnGreenProp3);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Green");
 				}
 				//method for repairing
 				if(g3.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(g3, btnGreenProp3, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(g3, btnGreenProp3, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(g3.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(g3, btnGreenProp3, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(g3, btnGreenProp3, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(g3.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -2839,29 +2911,30 @@ public class playSlumlord {
 				if(g4.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && g4.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInGreen(g4, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnGreenProp4, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnGreenProp4, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(g4.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == 3 || playerChars.get(playersTurn).DamageVar == 0 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( g4, playerChars, playersTurn, phase, characterCard, btnGreenProp4, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(g4.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( g4, playerChars, playersTurn, phase, characterCard, btnGreenProp4);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Green");
 				}
 				//method for repairing
 				if(g4.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(g4, btnGreenProp4, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(g4, btnGreenProp4, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(g4.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(g4, btnGreenProp4, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(g4, btnGreenProp4, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(g4.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -2887,29 +2960,30 @@ public class playSlumlord {
 				if(g5.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && g5.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInGreen(g5, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnGreenProp5, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnGreenProp5, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(g5.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == 3 || playerChars.get(playersTurn).DamageVar == 0 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( g5, playerChars, playersTurn, phase, characterCard, btnGreenProp5, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(g5.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( g5, playerChars, playersTurn, phase, characterCard, btnGreenProp5);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Green");
 				}
 				//method for repairing
 				if(g5.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(g5, btnGreenProp5, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(g5, btnGreenProp5, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(g5.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(g5, btnGreenProp5, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(g5, btnGreenProp5, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(g5.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -2934,29 +3008,30 @@ public class playSlumlord {
 				if(g6.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && g6.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInGreen(g6, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnGreenProp6, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnGreenProp6, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(g6.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == 3 || playerChars.get(playersTurn).DamageVar == 0 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( g6, playerChars, playersTurn, phase, characterCard, btnGreenProp6, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(g6.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( g6, playerChars, playersTurn, phase, characterCard, btnGreenProp6);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Green");
 				}
 				//method for repairing
 				if(g6.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(g6, btnGreenProp6, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(g6, btnGreenProp6, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(g6.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(g6, btnGreenProp6, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(g6, btnGreenProp6, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(g6.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -2981,29 +3056,30 @@ public class playSlumlord {
 				if(g7.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && g7.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInGreen(g7, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnGreenProp7, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnGreenProp7, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(g7.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == 3 || playerChars.get(playersTurn).DamageVar == 0 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( g7, playerChars, playersTurn, phase, characterCard, btnGreenProp7, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(g7.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( g7, playerChars, playersTurn, phase, characterCard, btnGreenProp7);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Green");
 				}
 				//method for repairing
 				if(g7.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(g7, btnGreenProp7, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(g7, btnGreenProp7, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(g7.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(g7, btnGreenProp7, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(g7, btnGreenProp7, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(g7.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -3028,29 +3104,30 @@ public class playSlumlord {
 				if(g8.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && g8.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInGreen(g8, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnGreenProp8, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnGreenProp8, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(g8.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == 3 || playerChars.get(playersTurn).DamageVar == 0 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( g8, playerChars, playersTurn, phase, characterCard, btnGreenProp8, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(g8.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( g8, playerChars, playersTurn, phase, characterCard, btnGreenProp8);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Green");
 				}
 				//method for repairing
 				if(g8.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(g8, btnGreenProp8, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(g8, btnGreenProp8, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(g8.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(g8, btnGreenProp8, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(g8, btnGreenProp8, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(g8.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -3075,29 +3152,30 @@ public class playSlumlord {
 				if(g9.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == -1 && g9.Occupied == false && phase == 1 && playerChars.get(playersTurn).numDice != 0)
 				{
 					currentRoll = playerChars.get(playersTurn).MoveInGreen(g9, playerChars, playersTurn, phase, currentTenant,  currentRoll, gameDice, diceResults, Turn, 
-							btnGreenProp9, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase);
+							btnGreenProp9, avaliable, avaliableTenants, round, btnDrawCard, btnNextPhase, roundS);
 				}
 				//method for adding damage to property
 				if(g9.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && playerChars.get(playersTurn).DamageVar == 3 || playerChars.get(playersTurn).DamageVar == 0 && phase == 2 || phase == 11)
 				{
 					playerChars.get(playersTurn).AddDamage( g9, playerChars, playersTurn, phase, characterCard, btnGreenProp9, currentRoll, diceResults, Turn, 
-							btnTakeBank, btnDrawCard, btnNextPhase);
+							btnTakeBank, btnDrawCard, btnNextPhase, roundS);
 					CardDisplay.setText("");
 				}
 				//method for buying
 				if(g9.OwnedBy.equals("")&& phase == 3)
 				{
 					playerChars.get(playersTurn).Buying( g9, playerChars, playersTurn, phase, characterCard, btnGreenProp9);
+					generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", roundS + "," ,(((character)playerChars.get(playersTurn)).Name), ",Bought Property,","Green");
 				}
 				//method for repairing
 				if(g9.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor)&& phase == 4)
 				{
-					playerChars.get(playersTurn).Repairing(g9, btnGreenProp9, playerChars, playersTurn, phase, Turn, characterCard );
+					playerChars.get(playersTurn).Repairing(g9, btnGreenProp9, playerChars, playersTurn, phase, Turn, characterCard, roundS );
 				}
 				//Method for upgrading
 				if(g9.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 5)
 				{
-					playerChars.get(playersTurn).Upgrading(g9, btnGreenProp9, playerChars, playersTurn, phase, Turn, characterCard);
+					playerChars.get(playersTurn).Upgrading(g9, btnGreenProp9, playerChars, playersTurn, phase, Turn, characterCard, roundS);
 				}
 				//method for removing tenant of your own
 				if(g9.OwnedBy.equals(playerChars.get(playersTurn).PlayerColor) && phase == 6)
@@ -3438,6 +3516,30 @@ public class playSlumlord {
 						playerChars.get(playersTurn).DamageVar = -1;
 						//increment round
 						round++;
+						if(round == 1)
+							roundS = "1";
+						if(round == 2)
+							roundS = "2";
+						if(round == 3)
+							roundS = "3";
+						if(round == 4)
+							roundS = "4";
+						if(round == 5)
+							roundS = "5";
+						if(round == 6)
+							roundS = "6";
+						if(round == 7)
+							roundS = "7";
+						if(round == 8)
+							roundS = "8";
+						if(round == 9)
+							roundS = "9";
+						if(round == 10)
+							roundS = "10";
+						if(round == 11)
+							roundS = "11";
+						if(round == 12)
+							roundS = "12";
 						//display proper character card and text
 						characterCard.setText(playerChars.get(playersTurn).charCard() );
 						Turn.setText("<html>" + playerChars.get(playersTurn).Name + "'s Turn Pick a Tenant from the Avaliable Tenants </html>");
@@ -3655,6 +3757,7 @@ public class playSlumlord {
 			}
 		});
 		
+	
 		//set background to galaxy game board
 		JLabel lblNewLabel = new JLabel("");
 		lblNewLabel.setIcon(new ImageIcon(playSlumlord.class.getResource("/images/Background 1.jpg")));
@@ -3836,6 +3939,8 @@ public class playSlumlord {
 		//actions for round 0 next player button
 		btnNextPlayer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//add to CSV file
+				//generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", "0," ,playerChars.get(playersTurn).Name, ",Selected First Property","");
 				//increments player and updates player card
 				playersTurn++;
 				characterCard.setText(playerChars.get(playersTurn).charCard());
@@ -3945,7 +4050,9 @@ public class playSlumlord {
 		//Initializes board and starts round 1
 		btnStartRoundOne.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				roundS = "1";
 				//set player turn to 0
+				//generateCsvFile("C:\\Users\\salty\\Desktop\\Game.csv", "0," ,playerChars.get(playersTurn).Name, ",Selected First Property","");
 				playersTurn = 0;
 				//iterates over all characters and gives them initial 500 to start game with
 				for( int i = 0; i < players; i++)
