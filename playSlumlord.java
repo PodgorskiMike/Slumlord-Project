@@ -83,6 +83,17 @@ public class playSlumlord {
 	
 	int totalRounds = 0;
 	
+	static stats m = new stats("",0,0,0,0);
+	static stats n = new stats("",0,0,0,0);
+	static stats o = new stats("",0,0,0,0);
+	static stats p = new stats("",0,0,0,0);
+	static stats q = new stats("",0,0,0,0);
+	static stats r = new stats("",0,0,0,0);
+	static stats s = new stats("",0,0,0,0);
+	static stats t = new stats("",0,0,0,0);
+	static stats u = new stats("",0,0,0,0);
+	static stats v = new stats("",0,0,0,0);
+	
 	/**
 	 * Launch the application.
 	 */
@@ -97,6 +108,9 @@ public class playSlumlord {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				
+				
+				
 			}
 		});
 	}
@@ -584,7 +598,7 @@ public class playSlumlord {
 				try{
 					//System.out.println("Got this far");
 					//Get connection to DB
-					Connection myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/slumlord", "Mike" , "Sillygoose1!");
+					Connection myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/slumlord?&useSSL=false", "Mike" , "Sillygoose1!");
 					
 					//2. create statement
 					Statement myStmt = myConn.createStatement();
@@ -592,16 +606,7 @@ public class playSlumlord {
 					//3. Execute SQL query
 					ResultSet myRs = myStmt.executeQuery("select * from stats");
 					
-					stats m = new stats("",0,0,0,0);
-					stats n = new stats("",0,0,0,0);
-					stats o = new stats("",0,0,0,0);
-					stats p = new stats("",0,0,0,0);
-					stats q = new stats("",0,0,0,0);
-					stats r = new stats("",0,0,0,0);
-					stats s = new stats("",0,0,0,0);
-					stats t = new stats("",0,0,0,0);
-					stats u = new stats("",0,0,0,0);
-					stats v = new stats("",0,0,0,0);
+					
 					int place = 0;
 					//4. Process the result set
 					while (myRs.next()) {
@@ -3772,17 +3777,149 @@ public class playSlumlord {
 							int B = playerChars.get(f).BlueOwned * 1200;
 							int G = playerChars.get(f).GreenOwned * 2000;
 							playerChars.get(f).Bank = playerChars.get(f).Bank + R + B + G;
+							if(playerChars.get(f).Name == "Scotty")
+							{
+								m.totG = m.totG + 1;
+								m.Tscore = m.Tscore + playerChars.get(f).Bank;
+								if(playerChars.get(f).Bank > m.Hscore)
+								{
+									m.Hscore = playerChars.get(f).Bank;
+								}
+							}
+							if(playerChars.get(f).Name == "Burke")
+							{
+								n.totG = n.totG + 1;
+								n.Tscore = n.Tscore + playerChars.get(f).Bank;
+								if(playerChars.get(f).Bank > n.Hscore)
+								{
+									n.Hscore = playerChars.get(f).Bank;
+								}
+							}
+							if(playerChars.get(f).Name == "Han")
+							{
+								o.totG = o.totG + 1;
+								o.Tscore = o.Tscore + playerChars.get(f).Bank;
+								if(playerChars.get(f).Bank > o.Hscore)
+								{
+									o.Hscore = playerChars.get(f).Bank;
+								}
+							}
+							if(playerChars.get(f).Name == "Malcolm")
+							{
+								p.totG = p.totG + 1;
+								p.Tscore = p.Tscore + playerChars.get(f).Bank;
+								if(playerChars.get(f).Bank > p.Hscore)
+								{
+									p.Hscore = playerChars.get(f).Bank;
+								}
+							}
+							if(playerChars.get(f).Name == "Siri")
+							{
+								q.totG = q.totG + 1;
+								q.Tscore = q.Tscore + playerChars.get(f).Bank;
+								if(playerChars.get(f).Bank > q.Hscore)
+								{
+									q.Hscore = playerChars.get(f).Bank;
+								}
+							}
+							if(playerChars.get(f).Name == "Leia")
+							{
+								r.totG = r.totG + 1;
+								r.Tscore = r.Tscore + playerChars.get(f).Bank;
+								if(playerChars.get(f).Bank > r.Hscore)
+								{
+									r.Hscore = playerChars.get(f).Bank;
+								}
+							}
+							if(playerChars.get(f).Name == "Hoyt")
+							{
+								s.totG = s.totG + 1;
+								s.Tscore = s.Tscore + playerChars.get(f).Bank;
+								if(playerChars.get(f).Bank > s.Hscore)
+								{
+									s.Hscore = playerChars.get(f).Bank;
+								}
+							}
+							if(playerChars.get(f).Name == "Martin")
+							{
+								t.totG = t.totG + 1;
+								t.Tscore = t.Tscore + playerChars.get(f).Bank;
+								if(playerChars.get(f).Bank > t.Hscore)
+								{
+									t.Hscore = playerChars.get(f).Bank;
+								}
+							}
+							if(playerChars.get(f).Name == "Ripley")
+							{
+								u.totG = u.totG + 1;
+								u.Tscore = u.Tscore + playerChars.get(f).Bank;
+								if(playerChars.get(f).Bank > u.Hscore)
+								{
+									u.Hscore = playerChars.get(f).Bank;
+								}
+							}
+							if(playerChars.get(f).Name == "Jordi")
+							{
+								v.totG = v.totG + 1;
+								v.Tscore = v.Tscore + playerChars.get(f).Bank;
+								if(playerChars.get(f).Bank > v.Hscore)
+								{
+									v.Hscore = playerChars.get(f).Bank;
+								}
+							}
+							
+							
 						}
 						//set up winner display based on who has the most money in the bank
 						if(players == 2)
 						{
 							if(playerChars.get(0).Bank >= playerChars.get(1).Bank)
 							{
+								if(playerChars.get(0).Name == "Scotty")
+									m.wins = m.wins + 1;
+								if(playerChars.get(0).Name == "Burke")
+									n.wins = n.wins + 1;
+								if(playerChars.get(0).Name == "Han")
+									o.wins = o.wins + 1;
+								if(playerChars.get(0).Name == "Malcolm")
+									p.wins = p.wins + 1;
+								if(playerChars.get(0).Name == "Siri")
+									q.wins = q.wins + 1;
+								if(playerChars.get(0).Name == "Leia")
+									r.wins = r.wins + 1;
+								if(playerChars.get(0).Name == "Hoyt")
+									s.wins = s.wins + 1;
+								if(playerChars.get(0).Name == "Martin")
+									t.wins = t.wins + 1;
+								if(playerChars.get(0).Name == "Ripley")
+									u.wins = u.wins + 1;
+								if(playerChars.get(0).Name == "Jordi")
+									v.wins = v.wins + 1;
 								Winner.setVisible(true);
 								Winner.setText(playerChars.get(0).Name + " Is The Winner!");
 							}
 							else
 							{
+								if(playerChars.get(1).Name == "Scotty")
+									m.wins = m.wins + 1;
+								if(playerChars.get(1).Name == "Burke")
+									n.wins = n.wins + 1;
+								if(playerChars.get(1).Name == "Han")
+									o.wins = o.wins + 1;
+								if(playerChars.get(1).Name == "Malcolm")
+									p.wins = p.wins + 1;
+								if(playerChars.get(1).Name == "Siri")
+									q.wins = q.wins + 1;
+								if(playerChars.get(1).Name == "Leia")
+									r.wins = r.wins + 1;
+								if(playerChars.get(1).Name == "Hoyt")
+									s.wins = s.wins + 1;
+								if(playerChars.get(1).Name == "Martin")
+									t.wins = t.wins + 1;
+								if(playerChars.get(1).Name == "Ripley")
+									u.wins = u.wins + 1;
+								if(playerChars.get(1).Name == "Jordi")
+									v.wins = v.wins + 1;
 								Winner.setVisible(true);
 								Winner.setText(playerChars.get(1).Name + " Is The Winner!");
 							}
@@ -3798,16 +3935,76 @@ public class playSlumlord {
 						{
 							if(playerChars.get(0).Bank >= playerChars.get(1).Bank && playerChars.get(0).Bank >= playerChars.get(2).Bank)
 							{
+								if(playerChars.get(0).Name == "Scotty")
+									m.wins = m.wins + 1;
+								if(playerChars.get(0).Name == "Burke")
+									n.wins = n.wins + 1;
+								if(playerChars.get(0).Name == "Han")
+									o.wins = o.wins + 1;
+								if(playerChars.get(0).Name == "Malcolm")
+									p.wins = p.wins + 1;
+								if(playerChars.get(0).Name == "Siri")
+									q.wins = q.wins + 1;
+								if(playerChars.get(0).Name == "Leia")
+									r.wins = r.wins + 1;
+								if(playerChars.get(0).Name == "Hoyt")
+									s.wins = s.wins + 1;
+								if(playerChars.get(0).Name == "Martin")
+									t.wins = t.wins + 1;
+								if(playerChars.get(0).Name == "Ripley")
+									u.wins = u.wins + 1;
+								if(playerChars.get(0).Name == "Jordi")
+									v.wins = v.wins + 1;
 								Winner.setVisible(true);
 								Winner.setText(playerChars.get(0).Name + " Is The Winner!");
 							}
 							if(playerChars.get(1).Bank >= playerChars.get(0).Bank && playerChars.get(1).Bank >= playerChars.get(2).Bank)
 							{
+								if(playerChars.get(1).Name == "Scotty")
+									m.wins = m.wins + 1;
+								if(playerChars.get(1).Name == "Burke")
+									n.wins = n.wins + 1;
+								if(playerChars.get(1).Name == "Han")
+									o.wins = o.wins + 1;
+								if(playerChars.get(1).Name == "Malcolm")
+									p.wins = p.wins + 1;
+								if(playerChars.get(1).Name == "Siri")
+									q.wins = q.wins + 1;
+								if(playerChars.get(1).Name == "Leia")
+									r.wins = r.wins + 1;
+								if(playerChars.get(1).Name == "Hoyt")
+									s.wins = s.wins + 1;
+								if(playerChars.get(1).Name == "Martin")
+									t.wins = t.wins + 1;
+								if(playerChars.get(1).Name == "Ripley")
+									u.wins = u.wins + 1;
+								if(playerChars.get(1).Name == "Jordi")
+									v.wins = v.wins + 1;
 								Winner.setVisible(true);
 								Winner.setText(playerChars.get(1).Name + " Is The Winner!");
 							}
 							if(playerChars.get(2).Bank >= playerChars.get(0).Bank && playerChars.get(2).Bank >= playerChars.get(1).Bank)
 							{
+								if(playerChars.get(2).Name == "Scotty")
+									m.wins = m.wins + 1;
+								if(playerChars.get(2).Name == "Burke")
+									n.wins = n.wins + 1;
+								if(playerChars.get(2).Name == "Han")
+									o.wins = o.wins + 1;
+								if(playerChars.get(2).Name == "Malcolm")
+									p.wins = p.wins + 1;
+								if(playerChars.get(2).Name == "Siri")
+									q.wins = q.wins + 1;
+								if(playerChars.get(2).Name == "Leia")
+									r.wins = r.wins + 1;
+								if(playerChars.get(2).Name == "Hoyt")
+									s.wins = s.wins + 1;
+								if(playerChars.get(2).Name == "Martin")
+									t.wins = t.wins + 1;
+								if(playerChars.get(2).Name == "Ripley")
+									u.wins = u.wins + 1;
+								if(playerChars.get(2).Name == "Jordi")
+									v.wins = v.wins + 1;
 								Winner.setVisible(true);
 								Winner.setText(playerChars.get(1).Name + " Is The Winner!");
 							}
@@ -3823,21 +4020,101 @@ public class playSlumlord {
 						{
 							if(playerChars.get(0).Bank >= playerChars.get(1).Bank && playerChars.get(0).Bank >= playerChars.get(2).Bank && playerChars.get(0).Bank >= playerChars.get(3).Bank)
 							{
+								if(playerChars.get(0).Name == "Scotty")
+									m.wins = m.wins + 1;
+								if(playerChars.get(0).Name == "Burke")
+									n.wins = n.wins + 1;
+								if(playerChars.get(0).Name == "Han")
+									o.wins = o.wins + 1;
+								if(playerChars.get(0).Name == "Malcolm")
+									p.wins = p.wins + 1;
+								if(playerChars.get(0).Name == "Siri")
+									q.wins = q.wins + 1;
+								if(playerChars.get(0).Name == "Leia")
+									r.wins = r.wins + 1;
+								if(playerChars.get(0).Name == "Hoyt")
+									s.wins = s.wins + 1;
+								if(playerChars.get(0).Name == "Martin")
+									t.wins = t.wins + 1;
+								if(playerChars.get(0).Name == "Ripley")
+									u.wins = u.wins + 1;
+								if(playerChars.get(0).Name == "Jordi")
+									v.wins = v.wins + 1;
 								Winner.setVisible(true);
 								Winner.setText(playerChars.get(0).Name + " Is The Winner!");
 							}
 							if(playerChars.get(1).Bank >= playerChars.get(0).Bank && playerChars.get(1).Bank >= playerChars.get(2).Bank && playerChars.get(1).Bank >= playerChars.get(3).Bank)
 							{
+								if(playerChars.get(1).Name == "Scotty")
+									m.wins = m.wins + 1;
+								if(playerChars.get(1).Name == "Burke")
+									n.wins = n.wins + 1;
+								if(playerChars.get(1).Name == "Han")
+									o.wins = o.wins + 1;
+								if(playerChars.get(1).Name == "Malcolm")
+									p.wins = p.wins + 1;
+								if(playerChars.get(1).Name == "Siri")
+									q.wins = q.wins + 1;
+								if(playerChars.get(1).Name == "Leia")
+									r.wins = r.wins + 1;
+								if(playerChars.get(1).Name == "Hoyt")
+									s.wins = s.wins + 1;
+								if(playerChars.get(1).Name == "Martin")
+									t.wins = t.wins + 1;
+								if(playerChars.get(1).Name == "Ripley")
+									u.wins = u.wins + 1;
+								if(playerChars.get(1).Name == "Jordi")
+									v.wins = v.wins + 1;
 								Winner.setVisible(true);
 								Winner.setText(playerChars.get(1).Name + " Is The Winner!");
 							}
 							if(playerChars.get(2).Bank >= playerChars.get(0).Bank && playerChars.get(2).Bank >= playerChars.get(1).Bank && playerChars.get(2).Bank >= playerChars.get(3).Bank)
 							{
+								if(playerChars.get(2).Name == "Scotty")
+									m.wins = m.wins + 1;
+								if(playerChars.get(2).Name == "Burke")
+									n.wins = n.wins + 1;
+								if(playerChars.get(2).Name == "Han")
+									o.wins = o.wins + 1;
+								if(playerChars.get(2).Name == "Malcolm")
+									p.wins = p.wins + 1;
+								if(playerChars.get(2).Name == "Siri")
+									q.wins = q.wins + 1;
+								if(playerChars.get(2).Name == "Leia")
+									r.wins = r.wins + 1;
+								if(playerChars.get(2).Name == "Hoyt")
+									s.wins = s.wins + 1;
+								if(playerChars.get(2).Name == "Martin")
+									t.wins = t.wins + 1;
+								if(playerChars.get(2).Name == "Ripley")
+									u.wins = u.wins + 1;
+								if(playerChars.get(2).Name == "Jordi")
+									v.wins = v.wins + 1;
 								Winner.setVisible(true);
 								Winner.setText(playerChars.get(2).Name + " Is The Winner!");
 							}
 							if(playerChars.get(3).Bank >= playerChars.get(0).Bank && playerChars.get(3).Bank >= playerChars.get(1).Bank && playerChars.get(3).Bank >= playerChars.get(2).Bank)
 							{
+								if(playerChars.get(3).Name == "Scotty")
+									m.wins = m.wins + 1;
+								if(playerChars.get(3).Name == "Burke")
+									n.wins = n.wins + 1;
+								if(playerChars.get(3).Name == "Han")
+									o.wins = o.wins + 1;
+								if(playerChars.get(3).Name == "Malcolm")
+									p.wins = p.wins + 1;
+								if(playerChars.get(3).Name == "Siri")
+									q.wins = q.wins + 1;
+								if(playerChars.get(3).Name == "Leia")
+									r.wins = r.wins + 1;
+								if(playerChars.get(3).Name == "Hoyt")
+									s.wins = s.wins + 1;
+								if(playerChars.get(3).Name == "Martin")
+									t.wins = t.wins + 1;
+								if(playerChars.get(3).Name == "Ripley")
+									u.wins = u.wins + 1;
+								if(playerChars.get(3).Name == "Jordi")
+									v.wins = v.wins + 1;
 								Winner.setVisible(true);
 								Winner.setText(playerChars.get(3).Name + " Is The Winner!");
 							}
@@ -3849,6 +4126,134 @@ public class playSlumlord {
 							+ "<br>" + playerChars.get(1).Name + "<br>" + " Red Buildings Owned " + playerChars.get(1).RedOwned + "<br>" + " Blue Buildings Owned " + playerChars.get(1).BlueOwned + "<br>" + " Green Building Owned " + playerChars.get(1).GreenOwned + "<br>" + " Total Bank " + playerChars.get(1).Bank
 							+ "<br>" + playerChars.get(2).Name + "<br>" + " Red Buildings Owned " + playerChars.get(2).RedOwned + "<br>" + " Blue Buildings Owned " + playerChars.get(2).BlueOwned + "<br>" + " Green Building Owned " + playerChars.get(2).GreenOwned + "<br>" + " Total Bank " + playerChars.get(2).Bank
 							+ "<br>" + playerChars.get(3).Name + "<br>" + " Red Buildings Owned " + playerChars.get(3).RedOwned + "<br>" + " Blue Buildings Owned " + playerChars.get(3).BlueOwned + "<br>" + " Green Building Owned " + playerChars.get(3).GreenOwned + "<br>" + " Total Bank " + playerChars.get(3).Bank);
+						}
+						
+						try{
+							//System.out.println("Got this far");
+							//Get connection to DB
+							Connection myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/slumlord?&useSSL=false", "Mike" , "Sillygoose1!");
+							
+							//2. create statement
+							Statement myStmt = myConn.createStatement();
+							
+							//UPDATE slumlord.stats SET TotalGames = '2',Wins = '1',HighestScore = '100', TotalScore = '100' where idStats = '1';
+							//3. Execute SQL query
+							String sql = "UPDATE slumlord.stats SET TotalGames = '"
+									+ m.totG +"',Wins ='" + m.wins +"',HighestScore = '" + m.Hscore +"', TotalScore = '" + m.Tscore + "' WHERE idStats = '1'";
+							String sqla = "UPDATE slumlord.stats SET TotalGames = '"
+									+ n.totG +"',Wins ='" + n.wins +"',HighestScore = '" + n.Hscore +"', TotalScore = '" + n.Tscore + "' WHERE idStats = '2'";
+							String sqlb = "UPDATE slumlord.stats SET TotalGames = '"
+									+ o.totG +"',Wins ='" + o.wins +"',HighestScore = '" + o.Hscore +"', TotalScore = '" + o.Tscore + "' WHERE idStats = '3'";
+							String sqlc = "UPDATE slumlord.stats SET TotalGames = '"
+									+ p.totG +"',Wins ='" + p.wins +"',HighestScore = '" + p.Hscore +"', TotalScore = '" + p.Tscore + "' WHERE idStats = '4'";
+							String sqld = "UPDATE slumlord.stats SET TotalGames = '"
+									+ q.totG +"',Wins ='" + q.wins +"',HighestScore = '" + q.Hscore +"', TotalScore = '" + q.Tscore + "' WHERE idStats = '5'";
+							String sqle = "UPDATE slumlord.stats SET TotalGames = '"
+									+ r.totG +"',Wins ='" + r.wins +"',HighestScore = '" + r.Hscore +"', TotalScore = '" + r.Tscore + "' WHERE idStats = '6'";
+							String sqlf = "UPDATE slumlord.stats SET TotalGames = '"
+									+ s.totG +"',Wins ='" + s.wins +"',HighestScore = '" + s.Hscore +"', TotalScore = '" + s.Tscore + "' WHERE idStats = '7'";
+							String sqlg = "UPDATE slumlord.stats SET TotalGames = '"
+									+ t.totG +"',Wins ='" + t.wins +"',HighestScore = '" + t.Hscore +"', TotalScore = '" + t.Tscore + "' WHERE idStats = '8'";
+							String sqlh = "UPDATE slumlord.stats SET TotalGames = '"
+									+ u.totG +"',Wins ='" + u.wins +"',HighestScore = '" + u.Hscore +"', TotalScore = '" + u.Tscore + "' WHERE idStats = '9'";
+							String sqli = "UPDATE slumlord.stats SET TotalGames = '"
+									+ v.totG +"',Wins ='" + v.wins +"',HighestScore = '" + v.Hscore +"', TotalScore = '" + v.Tscore + "' WHERE idStats = '10'";
+							
+							myStmt.executeUpdate(sql);
+							myStmt.executeUpdate(sqla);
+							myStmt.executeUpdate(sqlb);
+							myStmt.executeUpdate(sqlc);
+							myStmt.executeUpdate(sqld);
+							myStmt.executeUpdate(sqle);
+							myStmt.executeUpdate(sqlf);
+							myStmt.executeUpdate(sqlg);
+							myStmt.executeUpdate(sqlh);
+							myStmt.executeUpdate(sqli);
+							statsDisp.setText("<html><table border=1>"
+									+"<tr>"
+									+"<th>Name</th>"
+									+"<th>Games Played</th>"
+									+"<th>Wins</th>"
+									+"<th>High Score</th>"
+									+"<th>Total Score</th>"
+									+"</tr>"
+									+"<tr>"
+									+"<td>"+ m.name +"</td>"
+									+"<td>" + m.totG + "</td>"
+									+"<td>" + m.wins + "</td>"
+									+"<td>" + m.Hscore + "</td>"
+									+"<td>" + m.Tscore + "</td>"
+									+"</tr>"
+									+"<tr>"
+									+"<td>"+ n.name +"</td>"
+									+"<td>" + n.totG + "</td>"
+									+"<td>" + n.wins + "</td>"
+									+"<td>" + n.Hscore + "</td>"
+									+"<td>" + n.Tscore + "</td>"
+									+"</tr>"
+									+"<tr>"
+									+"<td>"+ o.name +"</td>"
+									+"<td>" + o.totG + "</td>"
+									+"<td>" + o.wins + "</td>"
+									+"<td>" + o.Hscore + "</td>"
+									+"<td>" + o.Tscore + "</td>"
+									+"</tr>"
+									+"<tr>"
+									+"<td>"+ p.name +"</td>"
+									+"<td>" + p.totG + "</td>"
+									+"<td>" + p.wins + "</td>"
+									+"<td>" + p.Hscore + "</td>"
+									+"<td>" + p.Tscore + "</td>"
+									+"</tr>"
+									+"<tr>"
+									+"<td>"+ q.name +"</td>"
+									+"<td>" + q.totG + "</td>"
+									+"<td>" + q.wins + "</td>"
+									+"<td>" + q.Hscore + "</td>"
+									+"<td>" + q.Tscore + "</td>"
+									+"</tr>"
+									+"<tr>"
+									+"<td>"+ r.name +"</td>"
+									+"<td>" + r.totG + "</td>"
+									+"<td>" + r.wins + "</td>"
+									+"<td>" + r.Hscore + "</td>"
+									+"<td>" + r.Tscore + "</td>"
+									+"</tr>"
+									+"<tr>"
+									+"<td>"+ s.name +"</td>"
+									+"<td>" + s.totG + "</td>"
+									+"<td>" + s.wins + "</td>"
+									+"<td>" + s.Hscore + "</td>"
+									+"<td>" + s.Tscore + "</td>"
+									+"</tr>"
+									+"<tr>"
+									+"<td>"+ t.name +"</td>"
+									+"<td>" + t.totG + "</td>"
+									+"<td>" + t.wins + "</td>"
+									+"<td>" + t.Hscore + "</td>"
+									+"<td>" + t.Tscore + "</td>"
+									+"</tr>"
+									+"<tr>"
+									+"<td>"+ u.name +"</td>"
+									+"<td>" + u.totG + "</td>"
+									+"<td>" + u.wins + "</td>"
+									+"<td>" + u.Hscore + "</td>"
+									+"<td>" + u.Tscore + "</td>"
+									+"</tr>"
+									+"<tr>"
+									+"<td>"+ v.name +"</td>"
+									+"<td>" + v.totG + "</td>"
+									+"<td>" + v.wins + "</td>"
+									+"<td>" + v.Hscore + "</td>"
+									+"<td>" + v.Tscore + "</td>"
+									+"</tr> </html");
+							statsDisp.setBounds(1290, 710, 606, 348);
+							statsDisp.setVisible(true);
+							
+						}
+						catch (Exception exc){
+							exc.printStackTrace();
+							
 						}
 							
 					}
@@ -3876,7 +4281,7 @@ public class playSlumlord {
 				btnTotalRounds6.setVisible(false);
 				btnTotalRounds12.setVisible(false);
 				btnTotalRounds24.setVisible(false);
-				totalRounds = 6;
+				totalRounds = 1;
 			}
 		});
 		
@@ -4117,6 +4522,7 @@ public class playSlumlord {
 					//once all players have chosen a character initialize game board
 					if(j == players -1)
 					{
+						statsDisp.setVisible(false);
 						btnSelectCharacter.setVisible(false);
 						lblWelcomeToSlumlord.setVisible(false);
 						btnRules.setVisible(false);
