@@ -32,6 +32,9 @@ import javax.swing.border.LineBorder;
 import java.awt.SystemColor;
 import javax.swing.border.BevelBorder;
 import javax.swing.JScrollBar;
+import javax.swing.JTextField;
+import com.jgoodies.forms.factories.DefaultComponentFactory;
+import javax.swing.JComboBox;
 
 public class playSlumlord {
 	
@@ -80,6 +83,10 @@ public class playSlumlord {
 	
 	//Create Game Dice
 	dice gameDice = new dice(0,0,0);
+	
+	int WinnerNumber = -1;
+	
+	String[] tagList = {"","","",""};
 	
 	int totalRounds = 0;
 	
@@ -3897,6 +3904,7 @@ public class playSlumlord {
 									v.wins = v.wins + 1;
 								Winner.setVisible(true);
 								Winner.setText(playerChars.get(0).Name + " Is The Winner!");
+								WinnerNumber = playerChars.get(0).PlayerNumber;
 							}
 							else
 							{
@@ -3922,6 +3930,7 @@ public class playSlumlord {
 									v.wins = v.wins + 1;
 								Winner.setVisible(true);
 								Winner.setText(playerChars.get(1).Name + " Is The Winner!");
+								WinnerNumber = playerChars.get(1).PlayerNumber;
 							}
 							
 							Turn.setBounds(700, 300, 500, 400);
@@ -3957,6 +3966,8 @@ public class playSlumlord {
 									v.wins = v.wins + 1;
 								Winner.setVisible(true);
 								Winner.setText(playerChars.get(0).Name + " Is The Winner!");
+								WinnerNumber = playerChars.get(0).PlayerNumber;
+								
 							}
 							if(playerChars.get(1).Bank >= playerChars.get(0).Bank && playerChars.get(1).Bank >= playerChars.get(2).Bank)
 							{
@@ -3982,6 +3993,7 @@ public class playSlumlord {
 									v.wins = v.wins + 1;
 								Winner.setVisible(true);
 								Winner.setText(playerChars.get(1).Name + " Is The Winner!");
+								WinnerNumber = playerChars.get(1).PlayerNumber;
 							}
 							if(playerChars.get(2).Bank >= playerChars.get(0).Bank && playerChars.get(2).Bank >= playerChars.get(1).Bank)
 							{
@@ -4006,7 +4018,8 @@ public class playSlumlord {
 								if(playerChars.get(2).Name == "Jordi")
 									v.wins = v.wins + 1;
 								Winner.setVisible(true);
-								Winner.setText(playerChars.get(1).Name + " Is The Winner!");
+								Winner.setText(playerChars.get(2).Name + " Is The Winner!");
+								WinnerNumber = playerChars.get(2).PlayerNumber;
 							}
 							Turn.setBounds(700, 300, 550, 450);
 							Turn.setOpaque(true);
@@ -4042,6 +4055,7 @@ public class playSlumlord {
 									v.wins = v.wins + 1;
 								Winner.setVisible(true);
 								Winner.setText(playerChars.get(0).Name + " Is The Winner!");
+								WinnerNumber = playerChars.get(0).PlayerNumber;
 							}
 							if(playerChars.get(1).Bank >= playerChars.get(0).Bank && playerChars.get(1).Bank >= playerChars.get(2).Bank && playerChars.get(1).Bank >= playerChars.get(3).Bank)
 							{
@@ -4067,6 +4081,7 @@ public class playSlumlord {
 									v.wins = v.wins + 1;
 								Winner.setVisible(true);
 								Winner.setText(playerChars.get(1).Name + " Is The Winner!");
+								WinnerNumber = playerChars.get(1).PlayerNumber;
 							}
 							if(playerChars.get(2).Bank >= playerChars.get(0).Bank && playerChars.get(2).Bank >= playerChars.get(1).Bank && playerChars.get(2).Bank >= playerChars.get(3).Bank)
 							{
@@ -4092,6 +4107,7 @@ public class playSlumlord {
 									v.wins = v.wins + 1;
 								Winner.setVisible(true);
 								Winner.setText(playerChars.get(2).Name + " Is The Winner!");
+								WinnerNumber = playerChars.get(2).PlayerNumber;
 							}
 							if(playerChars.get(3).Bank >= playerChars.get(0).Bank && playerChars.get(3).Bank >= playerChars.get(1).Bank && playerChars.get(3).Bank >= playerChars.get(2).Bank)
 							{
@@ -4117,6 +4133,7 @@ public class playSlumlord {
 									v.wins = v.wins + 1;
 								Winner.setVisible(true);
 								Winner.setText(playerChars.get(3).Name + " Is The Winner!");
+								WinnerNumber = playerChars.get(3).PlayerNumber;
 							}
 							Turn.setBounds(700, 300, 550, 700);
 							Turn.setOpaque(true);
@@ -4205,7 +4222,7 @@ public class playSlumlord {
 									+"<td>" + p.Hscore + "</td>"
 									+"<td>" + p.Tscore + "</td>"
 									+"</tr>"
-									+"<tr>"
+									+"<tr>" 
 									+"<td>"+ q.name +"</td>"
 									+"<td>" + q.totG + "</td>"
 									+"<td>" + q.wins + "</td>"
@@ -4254,6 +4271,20 @@ public class playSlumlord {
 						catch (Exception exc){
 							exc.printStackTrace();
 							
+						}
+						try{
+							//Get connection to DB
+							Connection myConn1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/slumlord?&useSSL=false", "Mike" , "Sillygoose1!");
+							
+							//2. create statement
+							Statement myStmt1 = myConn1.createStatement();
+							
+							String sql = "UPDATE slumlord.gamertag SET GamesWon = GamesWon + 1 WHERE GamerTag = '" + tagList[WinnerNumber] + "'";
+										
+						myStmt1.executeUpdate(sql);
+						}
+						catch (Exception exc){
+							exc.printStackTrace();
 						}
 							
 					}
@@ -4311,6 +4342,95 @@ public class playSlumlord {
 				totalRounds = 24;
 			}
 		});
+		
+		
+		
+		
+		JButton btnNewPlayer = new JButton("Player ID");
+		btnNewPlayer.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				for(int i =0; i<players; i++)
+				{
+					String gamerTag = (String)JOptionPane.showInputDialog(
+						frmSlumlord,
+						"Enter Your Unique Gamer Tag",
+						"GamerTag", JOptionPane.PLAIN_MESSAGE,
+						null,
+						null,
+						"");
+					tagList[i] = gamerTag;
+					try{
+					
+						//Get connection to DB
+						Connection myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/slumlord?&useSSL=false", "Mike" , "Sillygoose1!");
+						
+						//2. create statement
+						Statement myStmt = myConn.createStatement();
+						
+						//UPDATE slumlord.stats SET TotalGames = '2',Wins = '1',HighestScore = '100', TotalScore = '100' where idStats = '1';
+						//3. Execute SQL query
+						ResultSet myRs = myStmt.executeQuery("SELECT * FROM slumlord.gamertag WHERE GamerTag = '" + tagList[i] + "'" );
+						
+						if (myRs.next() == true ) {
+								Turn.setText("<html>Welcome Back " + (myRs.getString("GamerTag") + " You Have Played " + myRs.getInt("GamesPlayed") + " games. You have Won " + myRs.getInt("GamesWon") + " times!</html>"));
+								Turn.setVisible(true);	
+								
+								try{
+									//Get connection to DB
+									Connection myConn1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/slumlord?&useSSL=false", "Mike" , "Sillygoose1!");
+									
+									//2. create statement
+									Statement myStmt1 = myConn1.createStatement();
+									
+									String sql = "UPDATE slumlord.gamertag SET GamesPlayed = GamesPlayed + 1 WHERE GamerTag = '" + myRs.getString("GamerTag") + "'";
+												
+								myStmt1.executeUpdate(sql);
+								}
+								catch (Exception exc){
+									exc.printStackTrace();
+								}
+						}
+						else
+						{
+							try{
+								//Get connection to DB
+								Connection myConn1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/slumlord?&useSSL=false", "Mike" , "Sillygoose1!");
+								
+								//2. create statement
+								Statement myStmt1 = myConn1.createStatement();
+								
+								String sql = "INSERT into gamertag" 
+										+ " (GamerTag, GamesWon, GamesPlayed)"
+										+ " values ('" + tagList[i] + "', '0', '1')";
+								
+							myStmt1.executeUpdate(sql);
+							}
+							catch (Exception exc){
+								exc.printStackTrace();
+							}
+							
+						Turn.setText("A New Player! Welcome");
+						Turn.setVisible(true);
+						}
+					}
+					catch (Exception exc){
+						exc.printStackTrace();
+					}		
+			}
+				
+				btnTotalRounds6.setVisible(true);
+				btnTotalRounds12.setVisible(true);
+				btnTotalRounds24.setVisible(true);
+				btnNewPlayer.setVisible(false);
+			}
+		});
+		btnNewPlayer.setVisible(false);
+		btnNewPlayer.setContentAreaFilled(false);
+		btnNewPlayer.setBorderPainted(false);
+		btnNewPlayer.setForeground(Color.WHITE);
+		btnNewPlayer.setFont(new Font("Copperplate Gothic Bold", Font.PLAIN, 34));
+		btnNewPlayer.setBounds(48, 294, 219, 43);
+		frmSlumlord.getContentPane().add(btnNewPlayer);
 		
 		
 		
@@ -4452,9 +4572,8 @@ public class playSlumlord {
 			public void actionPerformed(ActionEvent e) {
 				//Sets players to 2
 				players = 2;
-				btnTotalRounds6.setVisible(true);
-				btnTotalRounds12.setVisible(true);
-				btnTotalRounds24.setVisible(true);
+				btnNewPlayer.setVisible(true);
+				
 				two.setVisible(false);
 				three.setVisible(false);
 				four.setVisible(false);
@@ -4469,9 +4588,7 @@ public class playSlumlord {
 			public void actionPerformed(ActionEvent e) {
 				//Sets players to 3
 				players = 3;
-				btnTotalRounds6.setVisible(true);
-				btnTotalRounds12.setVisible(true);
-				btnTotalRounds24.setVisible(true);
+				btnNewPlayer.setVisible(true);
 				two.setVisible(false);
 				three.setVisible(false);
 				four.setVisible(false);
@@ -4483,9 +4600,7 @@ public class playSlumlord {
 			public void actionPerformed(ActionEvent e) {
 				//Sets players to 4
 				players = 4;
-				btnTotalRounds6.setVisible(true);
-				btnTotalRounds12.setVisible(true);
-				btnTotalRounds24.setVisible(true);
+				btnNewPlayer.setVisible(true);
 				two.setVisible(false);
 				three.setVisible(false);
 				four.setVisible(false);

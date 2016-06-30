@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class tenantTokens {
 	
-	protected int RedTenant;
+	protected int RedTenant; 
 	protected int BlueTenant;
 	protected int GreenTenant;
 

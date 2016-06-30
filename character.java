@@ -47,6 +47,7 @@ public class character {
 	protected int DamageVar;
 	protected int SkillNum;
 	protected int PlayerNumber;
+	protected String Gamer;
 	
 	
 	//behaviors
@@ -83,6 +84,7 @@ public class character {
 		this.DamageVar = -1;
 		this.SkillNum = SkillNum;
 		this.PlayerNumber = -1;
+		this.Gamer = "";
 	}
 	
 	private static void generateCsvFile(String sFileName, String round, String player, String action, String outcome)
